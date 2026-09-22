@@ -1,20 +1,45 @@
-function StatCard({ icon, title, value, subtitle, type = "" }) {
-  return (
-    <div className="card">
-      <div className={`card-icon ${type}`}>
-        {icon}
-      </div>
+import React from "react";
 
-      <div>
-        <p>{title}</p>
+const h = React.createElement;
 
-        <h2>{value}</h2>
+function StatCard({
+  icon,
+  title,
+  value,
+  subtitle,
+  type = ""
+}) {
+  return h(
+    "div",
+    { className: "card" },
 
-        <span className={type === "green" ? "positive" : ""}>
-          {subtitle}
-        </span>
-      </div>
-    </div>
+    h(
+      "div",
+      {
+        className: `card-icon ${type}`
+      },
+      icon
+    ),
+
+    h(
+      "div",
+      null,
+
+      h("p", null, title),
+
+      h("h2", null, value),
+
+      h(
+        "span",
+        {
+          className:
+            type === "green"
+              ? "positive"
+              : ""
+        },
+        subtitle
+      )
+    )
   );
 }
 

@@ -1,17 +1,21 @@
+import React from "react";
+
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import StatCard from "../components/StatCard";
 
+const h = React.createElement;
+
 function StudentDashboard() {
   // Temporary demo data.
-  // Later we will replace this with data from api.js / MongoDB.
+  // Later this will come from api.js / MongoDB.
   const student = {
     name: "Student",
     role: "Student",
     currentCredits: 12,
     completedCredits: 88,
     registeredCourses: 3,
-    requiredCredits: 160,
+    requiredCredits: 160
   };
 
   const currentCourses = [
@@ -26,12 +30,14 @@ function StudentDashboard() {
       instructor: "Dr. Smith",
       credits: 4,
       addDropOpen: true,
-      closingDate: "30 Sep 2026",
+      closingDate: "30 Sep 2026"
     },
+
     {
       id: 2,
       code: "ITE321",
-      title: "Systems Analysis, Design & Implementation",
+      title:
+        "Systems Analysis, Design & Implementation",
       section: "02",
       day: "Wednesday",
       time: "10:30 - 12:30",
@@ -39,8 +45,9 @@ function StudentDashboard() {
       instructor: "Prof. Lee",
       credits: 4,
       addDropOpen: false,
-      closingDate: null,
+      closingDate: null
     },
+
     {
       id: 3,
       code: "ITE420",
@@ -52,230 +59,474 @@ function StudentDashboard() {
       instructor: "Dr. Taylor",
       credits: 4,
       addDropOpen: true,
-      closingDate: "30 Sep 2026",
-    },
+      closingDate: "30 Sep 2026"
+    }
   ];
 
   const failedCourses = [
     {
       code: "CSC210",
       title: "Data Structures",
-      grade: "F",
-    },
+      grade: "F"
+    }
   ];
 
   const progressPercentage = Math.round(
-    (student.completedCredits / student.requiredCredits) * 100
+    (
+      student.completedCredits /
+      student.requiredCredits
+    ) * 100
   );
 
   const remainingCredits =
-    student.requiredCredits - student.completedCredits;
+    student.requiredCredits -
+    student.completedCredits;
 
-  const availableCredits = 16 - student.currentCredits;
+  const availableCredits =
+    16 - student.currentCredits;
 
-  return (
-    <div className="student-layout">
-      <Sidebar />
+  const currentCourseElements =
+    currentCourses.map((course) =>
+      h(
+        "div",
+        {
+          className: "course",
+          key: course.id
+        },
 
-      <main className="main">
-        <Header name={student.name} role={student.role} />
+        h(
+          "div",
+          { className: "course-code" },
 
-        {/* Summary Cards */}
-        <section className="cards">
-          <StatCard
-            icon="📚"
-            title="Current Credits"
-            value={`${student.currentCredits} / 16`}
-            subtitle={`${availableCredits} credits available`}
-            type="blue"
-          />
+          h(
+            "strong",
+            null,
+            course.code
+          ),
 
-          <StatCard
-            icon="✓"
-            title="Completed Credits"
-            value={student.completedCredits}
-            subtitle={`of ${student.requiredCredits} required`}
-            type="green"
-          />
+          h(
+            "span",
+            null,
+            `Sec ${course.section}`
+          )
+        ),
 
-          <StatCard
-            icon="📖"
-            title="Registered Courses"
-            value={student.registeredCourses}
-            subtitle="This semester"
-            type="orange"
-          />
+        h(
+          "div",
+          { className: "course-info" },
 
-          <StatCard
-            icon="🎓"
-            title="Progress"
-            value={`${progressPercentage}%`}
-            subtitle="Degree completion"
-            type="purple"
-          />
-        </section>
+          h(
+            "h3",
+            null,
+            course.title
+          ),
 
-        {/* Main Dashboard Content */}
-        <section className="content-grid">
-          {/* Current Courses */}
-          <div className="panel courses-panel">
-            <div className="panel-header">
-              <div>
-                <h2>Current Courses</h2>
-                <p>Courses registered for the current semester</p>
-              </div>
+          h(
+            "p",
+            null,
+            `${course.day} · ${course.time}`
+          ),
 
-              <button className="outline-btn">
-                View All
-              </button>
-            </div>
+          h(
+            "p",
+            null,
+            `${course.room} · ${course.instructor}`
+          )
+        ),
 
-            <div className="current-courses">
-              {currentCourses.map((course) => (
-                <div className="course" key={course.id}>
-                  <div className="course-code">
-                    <strong>{course.code}</strong>
-                    <span>Sec {course.section}</span>
-                  </div>
+        h(
+          "div",
+          { className: "course-credit" },
 
-                  <div className="course-info">
-                    <h3>{course.title}</h3>
+          h(
+            "strong",
+            null,
+            course.credits
+          ),
 
-                    <p>
-                      {course.day} · {course.time}
-                    </p>
+          h(
+            "small",
+            null,
+            "Credits"
+          )
+        ),
 
-                    <p>
-                      {course.room} · {course.instructor}
-                    </p>
-                  </div>
+        h(
+          "span",
+          {
+            className:
+              course.addDropOpen
+                ? "status add-drop-open"
+                : "status add-drop-closed"
+          },
 
-                  <div className="course-credit">
-                    <strong>{course.credits}</strong>
-                    <small>Credits</small>
-                  </div>
+          course.addDropOpen
+            ? "Add/Drop Open"
+            : "Add/Drop Closed"
+        )
+      )
+    );
 
-                  <span
-                    className={
-                      course.addDropOpen
-                        ? "status add-drop-open"
-                        : "status add-drop-closed"
-                    }
-                  >
-                    {course.addDropOpen
-                      ? "Add/Drop Open"
-                      : "Add/Drop Closed"}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
+  const addDropElements =
+    currentCourses.map((course) =>
+      h(
+        "div",
+        {
+          className: "add-drop-item",
+          key: course.id
+        },
 
-          {/* Add / Drop Status */}
-          <div className="panel add-drop-panel">
-            <div className="panel-header">
-              <div>
-                <h2>Add / Drop Status</h2>
-                <p>Courses currently available for change requests</p>
-              </div>
-            </div>
+        h(
+          "div",
+          null,
 
-            <div className="add-drop-list">
-              {currentCourses.map((course) => (
-                <div className="add-drop-item" key={course.id}>
-                  <div>
-                    <strong>
-                      {course.code} - Section {course.section}
-                    </strong>
+          h(
+            "strong",
+            null,
+            `${course.code} - Section ${course.section}`
+          ),
 
-                    {course.addDropOpen ? (
-                      <p>
-                        Open until {course.closingDate}
-                      </p>
-                    ) : (
-                      <p>Add/drop window is closed</p>
-                    )}
-                  </div>
+          course.addDropOpen
+            ? h(
+                "p",
+                null,
+                `Open until ${course.closingDate}`
+              )
+            : h(
+                "p",
+                null,
+                "Add/drop window is closed"
+              )
+        ),
 
-                  {course.addDropOpen ? (
-                    <button className="request-btn">
-                      Request
-                    </button>
-                  ) : (
-                    <span className="closed-label">
-                      Closed
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+        course.addDropOpen
+          ? h(
+              "button",
+              {
+                className: "request-btn"
+              },
+              "Request"
+            )
+          : h(
+              "span",
+              {
+                className: "closed-label"
+              },
+              "Closed"
+            )
+      )
+    );
 
-        {/* Retake Alert */}
-        {failedCourses.length > 0 && (
-          <section className="panel retake-panel">
-            <div className="panel-header">
-              <div>
-                <h2>Retake Required</h2>
-                <p>
-                  Courses with a grade of F must be retaken
-                </p>
-              </div>
-            </div>
+  const failedCourseElements =
+    failedCourses.map((course) =>
+      h(
+        "div",
+        {
+          className: "retake-course",
+          key: course.code
+        },
 
-            {failedCourses.map((course) => (
-              <div className="retake-course" key={course.code}>
-                <div>
-                  <strong>
-                    {course.code} - {course.title}
-                  </strong>
+        h(
+          "div",
+          null,
 
-                  <p>Previous grade: {course.grade}</p>
-                </div>
+          h(
+            "strong",
+            null,
+            `${course.code} - ${course.title}`
+          ),
 
-                <span className="retake-badge">
-                  Retake Required
-                </span>
-              </div>
-            ))}
-          </section>
-        )}
+          h(
+            "p",
+            null,
+            `Previous grade: ${course.grade}`
+          )
+        ),
 
-        {/* Academic Progress */}
-        <section className="panel progress-panel">
-          <div className="panel-header">
-            <div>
-              <h2>Academic Progress</h2>
-              <p>Degree completion overview</p>
-            </div>
+        h(
+          "span",
+          {
+            className: "retake-badge"
+          },
+          "Retake Required"
+        )
+      )
+    );
 
-            <span className="graduation">
-              🎓 {remainingCredits} Credits Remaining
-            </span>
-          </div>
+  return h(
+    "div",
+    {
+      className: "student-layout"
+    },
 
-          <div className="progress-container">
-            <div className="progress-label">
-              <span>Completed Credits</span>
+    h(Sidebar),
 
-              <strong>
-                {student.completedCredits} / {student.requiredCredits}
-              </strong>
-            </div>
+    h(
+      "main",
+      {
+        className: "main"
+      },
 
-            <div className="progress-bar">
-              <div
-                className="progress-fill"
-                style={{
-                  width: `${progressPercentage}%`,
-                }}
-              ></div>
-            </div>
-          </div>
-        </section>
-      </main>
-    </div>
+      h(Header, {
+        name: student.name,
+        role: student.role
+      }),
+
+      h(
+        "section",
+        {
+          className: "cards"
+        },
+
+        h(StatCard, {
+          icon: "📚",
+          title: "Current Credits",
+          value: `${student.currentCredits} / 16`,
+          subtitle:
+            `${availableCredits} credits available`,
+          type: "blue"
+        }),
+
+        h(StatCard, {
+          icon: "✓",
+          title: "Completed Credits",
+          value: student.completedCredits,
+          subtitle:
+            `of ${student.requiredCredits} required`,
+          type: "green"
+        }),
+
+        h(StatCard, {
+          icon: "📖",
+          title: "Registered Courses",
+          value: student.registeredCourses,
+          subtitle: "This semester",
+          type: "orange"
+        }),
+
+        h(StatCard, {
+          icon: "🎓",
+          title: "Progress",
+          value: `${progressPercentage}%`,
+          subtitle: "Degree completion",
+          type: "purple"
+        })
+      ),
+
+      h(
+        "section",
+        {
+          className: "content-grid"
+        },
+
+        h(
+          "div",
+          {
+            className:
+              "panel courses-panel"
+          },
+
+          h(
+            "div",
+            {
+              className: "panel-header"
+            },
+
+            h(
+              "div",
+              null,
+
+              h(
+                "h2",
+                null,
+                "Current Courses"
+              ),
+
+              h(
+                "p",
+                null,
+                "Courses registered for the current semester"
+              )
+            ),
+
+            h(
+              "button",
+              {
+                className: "outline-btn"
+              },
+              "View All"
+            )
+          ),
+
+          h(
+            "div",
+            {
+              className: "current-courses"
+            },
+            currentCourseElements
+          )
+        ),
+
+        h(
+          "div",
+          {
+            className:
+              "panel add-drop-panel"
+          },
+
+          h(
+            "div",
+            {
+              className: "panel-header"
+            },
+
+            h(
+              "div",
+              null,
+
+              h(
+                "h2",
+                null,
+                "Add / Drop Status"
+              ),
+
+              h(
+                "p",
+                null,
+                "Courses currently available for change requests"
+              )
+            )
+          ),
+
+          h(
+            "div",
+            {
+              className: "add-drop-list"
+            },
+            addDropElements
+          )
+        )
+      ),
+
+      failedCourses.length > 0
+        ? h(
+            "section",
+            {
+              className:
+                "panel retake-panel"
+            },
+
+            h(
+              "div",
+              {
+                className: "panel-header"
+              },
+
+              h(
+                "div",
+                null,
+
+                h(
+                  "h2",
+                  null,
+                  "Retake Required"
+                ),
+
+                h(
+                  "p",
+                  null,
+                  "Courses with a grade of F must be retaken"
+                )
+              )
+            ),
+
+            failedCourseElements
+          )
+        : null,
+
+      h(
+        "section",
+        {
+          className:
+            "panel progress-panel"
+        },
+
+        h(
+          "div",
+          {
+            className: "panel-header"
+          },
+
+          h(
+            "div",
+            null,
+
+            h(
+              "h2",
+              null,
+              "Academic Progress"
+            ),
+
+            h(
+              "p",
+              null,
+              "Degree completion overview"
+            )
+          ),
+
+          h(
+            "span",
+            {
+              className: "graduation"
+            },
+            `🎓 ${remainingCredits} Credits Remaining`
+          )
+        ),
+
+        h(
+          "div",
+          {
+            className:
+              "progress-container"
+          },
+
+          h(
+            "div",
+            {
+              className:
+                "progress-label"
+            },
+
+            h(
+              "span",
+              null,
+              "Completed Credits"
+            ),
+
+            h(
+              "strong",
+              null,
+              `${student.completedCredits} / ${student.requiredCredits}`
+            )
+          ),
+
+          h(
+            "div",
+            {
+              className: "progress-bar"
+            },
+
+            h("div", {
+              className: "progress-fill",
+              style: {
+                width:
+                  `${progressPercentage}%`
+              }
+            })
+          )
+        )
+      )
+    )
   );
 }
 

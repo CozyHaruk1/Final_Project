@@ -1,27 +1,59 @@
-function Header({ name = "Student", role = "Student" }) {
-  const initial = name ? name.charAt(0).toUpperCase() : "S";
+import React from "react";
 
-  return (
-    <header className="header">
-      <div className="header-left">
-        <h1>Dashboard</h1>
+const h = React.createElement;
 
-        <p>
-          Welcome back, <span>{name}</span> 👋
-        </p>
-      </div>
+function Header({
+  name = "Student",
+  role = "Student"
+}) {
+  const initial = name
+    ? name.charAt(0).toUpperCase()
+    : "S";
 
-      <div className="profile">
-        <div className="notification">🔔</div>
+  return h(
+    "header",
+    { className: "header" },
 
-        <div className="avatar">{initial}</div>
+    h(
+      "div",
+      { className: "header-left" },
 
-        <div className="profile-info">
-          <strong>{name}</strong>
-          <small>{role}</small>
-        </div>
-      </div>
-    </header>
+      h("h1", null, "Dashboard"),
+
+      h(
+        "p",
+        null,
+        "Welcome back, ",
+        h("span", null, name),
+        " 👋"
+      )
+    ),
+
+    h(
+      "div",
+      { className: "profile" },
+
+      h(
+        "div",
+        { className: "notification" },
+        "🔔"
+      ),
+
+      h(
+        "div",
+        { className: "avatar" },
+        initial
+      ),
+
+      h(
+        "div",
+        { className: "profile-info" },
+
+        h("strong", null, name),
+
+        h("small", null, role)
+      )
+    )
   );
 }
 

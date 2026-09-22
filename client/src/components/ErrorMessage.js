@@ -1,9 +1,21 @@
-function ErrorMessage({ message = "Something went wrong." }) {
-  return (
-    <div className="error-message">
-      <span className="error-icon">!</span>
-      <p>{message}</p>
-    </div>
+import React from "react";
+
+const h = React.createElement;
+
+function ErrorMessage({
+  message = "Something went wrong."
+}) {
+  return h(
+    "div",
+    { className: "error-message" },
+
+    h(
+      "span",
+      { className: "error-icon" },
+      "!"
+    ),
+
+    h("p", null, message)
   );
 }
 
