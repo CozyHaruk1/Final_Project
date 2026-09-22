@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const offeringSchema = new mongoose.Schema({
-course: {
+courseId: {
 type: mongoose.Schema.Types.ObjectId,
 ref: "Course",
 required: true
@@ -47,7 +47,7 @@ required: true,
 trim: true
 },
 
-capacity: {
+seats: {
 type: Number,
 required: true,
 min: 1
@@ -70,4 +70,4 @@ default: null
 }
 });
 
-module.exports = mongoose.model("Offering", offeringSchema);
+module.exports = mongoose.model("Offering", offeringSchema); 
