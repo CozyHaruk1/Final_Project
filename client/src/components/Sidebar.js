@@ -1,90 +1,156 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import React from "react";
+import {
+  NavLink,
+  useNavigate
+} from "react-router-dom";
+
+const h = React.createElement;
 
 function Sidebar() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // Remove login information
     localStorage.removeItem("token");
     localStorage.removeItem("user");
 
-    // Return to login page
     navigate("/login");
   };
 
-  return (
-    <aside className="sidebar">
-      {/* Logo */}
-      <div className="logo">
-        <div className="logo-icon">CR</div>
+  const linkClass = ({ isActive }) => {
+    return isActive
+      ? "sidebar-link active"
+      : "sidebar-link";
+  };
 
-        <div className="logo-text">
-          <h2>CourseReg</h2>
-          <p>Student Portal</p>
-        </div>
-      </div>
+  return h(
+    "aside",
+    { className: "sidebar" },
 
-      {/* Navigation */}
-      <nav className="sidebar-nav">
-        <NavLink
-          to="/student/dashboard"
-          className={({ isActive }) =>
-            isActive ? "sidebar-link active" : "sidebar-link"
-          }
-        >
-          <span className="sidebar-icon">⌂</span>
-          <span>Dashboard</span>
-        </NavLink>
+    h(
+      "div",
+      { className: "logo" },
 
-        <NavLink
-          to="/student/courses"
-          className={({ isActive }) =>
-            isActive ? "sidebar-link active" : "sidebar-link"
-          }
-        >
-          <span className="sidebar-icon">📚</span>
-          <span>My Courses</span>
-        </NavLink>
+      h(
+        "div",
+        { className: "logo-icon" },
+        "CR"
+      ),
 
-        <NavLink
-          to="/student/record"
-          className={({ isActive }) =>
-            isActive ? "sidebar-link active" : "sidebar-link"
-          }
-        >
-          <span className="sidebar-icon">📊</span>
-          <span>Academic Record</span>
-        </NavLink>
+      h(
+        "div",
+        { className: "logo-text" },
 
-        <NavLink
-          to="/student/add-drop"
-          className={({ isActive }) =>
-            isActive ? "sidebar-link active" : "sidebar-link"
-          }
-        >
-          <span className="sidebar-icon">📝</span>
-          <span>Add / Drop</span>
-        </NavLink>
+        h("h2", null, "CourseReg"),
 
-        <NavLink
-          to="/student/browse"
-          className={({ isActive }) =>
-            isActive ? "sidebar-link active" : "sidebar-link"
-          }
-        >
-          <span className="sidebar-icon">🔎</span>
-          <span>Browse Courses</span>
-        </NavLink>
-      </nav>
+        h("p", null, "Student Portal")
+      )
+    ),
 
-      {/* Bottom */}
-      <div className="sidebar-bottom">
-        <button className="logout-button" onClick={handleLogout}>
-          <span className="sidebar-icon">↪</span>
-          <span>Logout</span>
-        </button>
-      </div>
-    </aside>
+    h(
+      "nav",
+      { className: "sidebar-nav" },
+
+      h(
+        NavLink,
+        {
+          to: "/student",
+          className: linkClass
+        },
+
+        h(
+          "span",
+          { className: "sidebar-icon" },
+          "⌂"
+        ),
+
+        h("span", null, "Dashboard")
+      ),
+
+      h(
+        NavLink,
+        {
+          to: "/student/courses",
+          className: linkClass
+        },
+
+        h(
+          "span",
+          { className: "sidebar-icon" },
+          "📚"
+        ),
+
+        h("span", null, "My Courses")
+      ),
+
+      h(
+        NavLink,
+        {
+          to: "/student/record",
+          className: linkClass
+        },
+
+        h(
+          "span",
+          { className: "sidebar-icon" },
+          "📊"
+        ),
+
+        h("span", null, "Academic Record")
+      ),
+
+      h(
+        NavLink,
+        {
+          to: "/student/add-drop",
+          className: linkClass
+        },
+
+        h(
+          "span",
+          { className: "sidebar-icon" },
+          "📝"
+        ),
+
+        h("span", null, "Add / Drop")
+      ),
+
+      h(
+        NavLink,
+        {
+          to: "/student/browse",
+          className: linkClass
+        },
+
+        h(
+          "span",
+          { className: "sidebar-icon" },
+          "🔎"
+        ),
+
+        h("span", null, "Browse Courses")
+      )
+    ),
+
+    h(
+      "div",
+      { className: "sidebar-bottom" },
+
+      h(
+        "button",
+        {
+          className: "logout-button",
+          onClick: handleLogout
+        },
+
+        h(
+          "span",
+          { className: "sidebar-icon" },
+          "↪"
+        ),
+
+        h("span", null, "Logout")
+      )
+    )
   );
 }
 

@@ -1,27 +1,35 @@
+import React from "react";
 import { Navigate } from "react-router-dom";
 
-function ProtectedRoute({ children, allowedRole }) {
-  const token = localStorage.getItem("token");
-  const storedUser = localStorage.getItem("user");
+import {
+  getCurrentUser,
+  getToken
+} from "../services/api";
 
-  let user = null;
+const h = React.createElement;
 
-  if (storedUser) {
-    try {
-      user = JSON.parse(storedUser);
-    } catch {
-      user = null;
-    }
-  }
+function ProtectedRoute({
+  children,
+  allowedRoles
+}) {
+  const token = getToken();
+  const user = getCurrentUser();
 
-  // Not logged in
   if (!token || !user) {
-    return <Navigate to="/login" replace />;
+    return h(Navigate, {
+      to: "/login",
+      replace: true
+    });
   }
 
-  // Logged in, but wrong role
-  if (allowedRole && user.role !== allowedRole) {
-    return <Navigate to="/login" replace />;
+  if (
+    allowedRoles &&
+    !allowedRoles.includes(user.role)
+  ) {
+    return h(Navigate, {
+      to: "/login",
+      replace: true
+    });
   }
 
   return children;

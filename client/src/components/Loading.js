@@ -1,9 +1,19 @@
-function Loading({ message = "Loading..." }) {
-  return (
-    <div className="loading-state">
-      <div className="loading-spinner"></div>
-      <p>{message}</p>
-    </div>
+import React from "react";
+
+const h = React.createElement;
+
+function Loading({
+  message = "Loading..."
+}) {
+  return h(
+    "div",
+    { className: "loading-state" },
+
+    h("div", {
+      className: "loading-spinner"
+    }),
+
+    h("p", null, message)
   );
 }
 
