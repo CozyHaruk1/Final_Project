@@ -1,97 +1,129 @@
-import React from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
 
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Navigate
-} from "react-router-dom";
-
-import Login from "./pages/login";
+import Login from "./pages/Login";
 import StudentDashboard from "./pages/StudentDashboard";
+import MyCourses from "./pages/MyCourses";
+import AcademicRecord from "./pages/AcademicRecord";
+import AddDrop from "./pages/AddDrop";
+import BrowseCourses from "./pages/BrowseCourses";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 import "./App.css";
 
+
 function AdminPlaceholder() {
-  return React.createElement(
-    "h1",
-    null,
-    "Admin Dashboard"
-  );
+  return <h1>Admin Dashboard</h1>;
 }
+
 
 function AdvisorPlaceholder() {
-  return React.createElement(
-    "h1",
-    null,
-    "Advisor Dashboard"
-  );
+  return <h1>Advisor Dashboard</h1>;
 }
 
+
 function App() {
-  return React.createElement(
-    BrowserRouter,
-    null,
+  return (
+    <Routes>
 
-    React.createElement(
-      Routes,
-      null,
+      <Route
+        path="/login"
+        element={<Login />}
+      />
 
-      React.createElement(Route, {
-        path: "/login",
-        element: React.createElement(Login)
-      }),
+      <Route
+        path="/student"
+        element={
+          <Navigate
+            to="/student/dashboard"
+            replace
+          />
+        }
+      />
 
-      React.createElement(Route, {
-        path: "/student",
-        element: React.createElement(
-          ProtectedRoute,
-          {
-            allowedRoles: ["student"]
-          },
-          React.createElement(StudentDashboard)
-        )
-      }),
+      <Route
+        path="/student/dashboard"
+        element={
+          <ProtectedRoute allowedRoles={["student"]}>
+            <StudentDashboard />
+          </ProtectedRoute>
+        }
+      />
 
-      React.createElement(Route, {
-        path: "/admin",
-        element: React.createElement(
-          ProtectedRoute,
-          {
-            allowedRoles: ["admin"]
-          },
-          React.createElement(AdminPlaceholder)
-        )
-      }),
+      <Route
+        path="/student/record"
+        element={
+          <ProtectedRoute allowedRoles={["student"]}>
+            <AcademicRecord />
+        </ProtectedRoute>
+        }
+      />
 
-      React.createElement(Route, {
-        path: "/advisor",
-        element: React.createElement(
-          ProtectedRoute,
-          {
-            allowedRoles: ["advisor"]
-          },
-          React.createElement(AdvisorPlaceholder)
-        )
-      }),
+      <Route
+        path="/student/courses"
+        element={
+          <ProtectedRoute allowedRoles={["student"]}>
+            <MyCourses />
+          </ProtectedRoute>
+        }
+      />
 
-      React.createElement(Route, {
-        path: "/",
-        element: React.createElement(Navigate, {
-          to: "/login",
-          replace: true
-        })
-      }),
+      <Route
+        path="/student/add-drop"
+        element={
+          <ProtectedRoute allowedRoles={["student"]}>
+            <AddDrop />
+          </ProtectedRoute>
+        }
+      />
 
-      React.createElement(Route, {
-        path: "*",
-        element: React.createElement(Navigate, {
-          to: "/login",
-          replace: true
-        })
-      })
-    )
+      <Route
+        path="/student/browse"
+        element={
+          <ProtectedRoute allowedRoles={["student"]}>
+            <BrowseCourses />
+          </ProtectedRoute>
+        }
+      /> 
+
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <AdminPlaceholder />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/advisor"
+        element={
+          <ProtectedRoute allowedRoles={["advisor"]}>
+            <AdvisorPlaceholder />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/"
+        element={
+          <Navigate
+            to="/login"
+            replace
+          />
+        }
+      />
+
+      <Route
+        path="*"
+        element={
+          <Navigate
+            to="/login"
+            replace
+          />
+        }
+      />
+
+    </Routes>
   );
 }
 
