@@ -1,8 +1,5 @@
-import React from "react";
-
-const h = React.createElement;
-
 function Header({
+  title = "Dashboard",
   name = "Student",
   role = "Student"
 }) {
@@ -10,50 +7,35 @@ function Header({
     ? name.charAt(0).toUpperCase()
     : "S";
 
-  return h(
-    "header",
-    { className: "header" },
+  return (
+    <header className="header">
 
-    h(
-      "div",
-      { className: "header-left" },
+      <div className="header-left">
+        <h1>{title}</h1>
 
-      h("h1", null, "Dashboard"),
+        <p>
+          Welcome back, <span>{name}</span> 👋
+        </p>
+      </div>
 
-      h(
-        "p",
-        null,
-        "Welcome back, ",
-        h("span", null, name),
-        " 👋"
-      )
-    ),
+      <div className="profile">
 
-    h(
-      "div",
-      { className: "profile" },
+        <div className="notification">
+          🔔
+        </div>
 
-      h(
-        "div",
-        { className: "notification" },
-        "🔔"
-      ),
+        <div className="avatar">
+          {initial}
+        </div>
 
-      h(
-        "div",
-        { className: "avatar" },
-        initial
-      ),
+        <div className="profile-info">
+          <strong>{name}</strong>
+          <small>{role}</small>
+        </div>
 
-      h(
-        "div",
-        { className: "profile-info" },
+      </div>
 
-        h("strong", null, name),
-
-        h("small", null, role)
-      )
-    )
+    </header>
   );
 }
 

@@ -1,10 +1,4 @@
-import React from "react";
-import {
-  NavLink,
-  useNavigate
-} from "react-router-dom";
-
-const h = React.createElement;
+import { NavLink, useNavigate } from "react-router-dom";
 
 function Sidebar() {
   const navigate = useNavigate();
@@ -16,141 +10,119 @@ function Sidebar() {
     navigate("/login");
   };
 
-  const linkClass = ({ isActive }) => {
-    return isActive
+  const linkClass = ({ isActive }) =>
+    isActive
       ? "sidebar-link active"
       : "sidebar-link";
-  };
 
-  return h(
-    "aside",
-    { className: "sidebar" },
+  return (
+    <aside className="sidebar">
 
-    h(
-      "div",
-      { className: "logo" },
+      <div className="logo">
+        <div className="logo-icon">
+          CR
+        </div>
 
-      h(
-        "div",
-        { className: "logo-icon" },
-        "CR"
-      ),
+        <div className="logo-text">
+          <h2>CourseReg</h2>
+          <p>Student Portal</p>
+        </div>
+      </div>
 
-      h(
-        "div",
-        { className: "logo-text" },
 
-        h("h2", null, "CourseReg"),
+      <nav className="sidebar-nav">
 
-        h("p", null, "Student Portal")
-      )
-    ),
+        <NavLink
+          to="/student/dashboard"
+          end
+          className={linkClass}
+        >
+          <span className="sidebar-icon">
+            ⌂
+          </span>
 
-    h(
-      "nav",
-      { className: "sidebar-nav" },
+          <span>
+            Dashboard
+          </span>
+        </NavLink>
 
-      h(
-        NavLink,
-        {
-          to: "/student",
-          className: linkClass
-        },
 
-        h(
-          "span",
-          { className: "sidebar-icon" },
-          "⌂"
-        ),
+        <NavLink
+          to="/student/courses"
+          className={linkClass}
+        >
+          <span className="sidebar-icon">
+            📚
+          </span>
 
-        h("span", null, "Dashboard")
-      ),
+          <span>
+            My Courses
+          </span>
+        </NavLink>
 
-      h(
-        NavLink,
-        {
-          to: "/student/courses",
-          className: linkClass
-        },
 
-        h(
-          "span",
-          { className: "sidebar-icon" },
-          "📚"
-        ),
+        <NavLink
+          to="/student/record"
+          className={linkClass}
+        >
+          <span className="sidebar-icon">
+            📊
+          </span>
 
-        h("span", null, "My Courses")
-      ),
+          <span>
+            Academic Record
+          </span>
+        </NavLink>
 
-      h(
-        NavLink,
-        {
-          to: "/student/record",
-          className: linkClass
-        },
 
-        h(
-          "span",
-          { className: "sidebar-icon" },
-          "📊"
-        ),
+        <NavLink
+          to="/student/add-drop"
+          className={linkClass}
+        >
+          <span className="sidebar-icon">
+            📝
+          </span>
 
-        h("span", null, "Academic Record")
-      ),
+          <span>
+            Add / Drop
+          </span>
+        </NavLink>
 
-      h(
-        NavLink,
-        {
-          to: "/student/add-drop",
-          className: linkClass
-        },
 
-        h(
-          "span",
-          { className: "sidebar-icon" },
-          "📝"
-        ),
+        <NavLink
+          to="/student/browse"
+          className={linkClass}
+        >
+          <span className="sidebar-icon">
+            🔎
+          </span>
 
-        h("span", null, "Add / Drop")
-      ),
+          <span>
+            Browse Courses
+          </span>
+        </NavLink>
 
-      h(
-        NavLink,
-        {
-          to: "/student/browse",
-          className: linkClass
-        },
+      </nav>
 
-        h(
-          "span",
-          { className: "sidebar-icon" },
-          "🔎"
-        ),
 
-        h("span", null, "Browse Courses")
-      )
-    ),
+      <div className="sidebar-bottom">
 
-    h(
-      "div",
-      { className: "sidebar-bottom" },
+        <button
+          className="logout-button"
+          onClick={handleLogout}
+        >
+          <span className="sidebar-icon">
+            ↪
+          </span>
 
-      h(
-        "button",
-        {
-          className: "logout-button",
-          onClick: handleLogout
-        },
+          <span>
+            Logout
+          </span>
+        </button>
 
-        h(
-          "span",
-          { className: "sidebar-icon" },
-          "↪"
-        ),
+      </div>
 
-        h("span", null, "Logout")
-      )
-    )
+    </aside>
   );
 }
 
