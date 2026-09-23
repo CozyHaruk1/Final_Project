@@ -1,26 +1,69 @@
 const express = require("express");
+
 const {
   getUsers,
   getUserById,
+  createUser,
   updateUser,
-  deactivateUser,
+  deleteUser,
 } = require("../controllers/userController");
+
 const protect = require("../middleware/authMiddleware");
 const authorize = require("../middleware/roleMiddleware");
 
 const router = express.Router();
 
-const allowSelfOrAdmin = (req, res, next) => {
-  if (req.user.role === "admin" || req.user.id === req.params.id) {
-    return next();
-  }
 
-  return res.status(403).json({ message: "Access denied." });
-};
+// ======================================================
+// ALL USER ROUTES REQUIRE ADMIN
+// ======================================================
 
-router.get("/", protect, authorize("admin"), getUsers);
-router.get("/:id", protect, allowSelfOrAdmin, getUserById);
-router.patch("/:id", protect, allowSelfOrAdmin, updateUser);
-router.patch("/:id/deactivate", protect, authorize("admin"), deactivateUser);
+router.use(protect);
+router.use(authorize("admin"));
+
+
+// ======================================================
+// /api/users
+// ======================================================
+
+// GET all users
+router.get(
+  "/",
+  getUsers
+);
+
+// CREATE new user
+router.post(
+  "/",
+  createUser
+);
+
+
+// ======================================================
+// /api/users/:id
+// ======================================================
+
+// GET one user
+router.get(
+  "/:id",
+  getUserById
+);
+
+// UPDATE user
+router.patch(
+  "/:id",
+  updateUser
+);
+
+// DELETE / deactivate user
+router.delete(
+  "/:id",
+  deleteUser
+);
+
+
+// ======================================================
+// EXPORT ROUTER
+// ======================================================
 
 module.exports = router;
