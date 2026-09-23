@@ -1,117 +1,71 @@
+import { useEffect, useState } from "react";
+
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
+import Loading from "../components/Loading";
+import ErrorMessage from "../components/ErrorMessage";
+
+import {
+  getCurrentUser,
+  getMyRecord
+} from "../services/api";
 
 function AcademicRecord() {
-  const records = [
-    {
-      term: "2025-3",
-      courses: [
-        {
-          code: "CSC210",
-          title: "Data Structures",
-          credits: 4,
-          grade: "F"
-        },
-        {
-          code: "ITE220",
-          title: "Database Management Systems I",
-          credits: 4,
-          grade: "B+"
-        },
-        {
-          code: "MAT210",
-          title: "Discrete Mathematics",
-          credits: 4,
-          grade: "B"
-        }
-      ]
-    },
-    {
-      term: "2025-2",
-      courses: [
-        {
-          code: "CSC120",
-          title: "Programming I",
-          credits: 4,
-          grade: "A"
-        },
-        {
-          code: "ITE210",
-          title: "Computer Networks",
-          credits: 4,
-          grade: "C+"
-        },
-        {
-          code: "GEN101",
-          title: "Academic English",
-          credits: 4,
-          grade: "B"
-        }
-      ]
-    },
-    {
-      term: "2025-1",
-      courses: [
-        {
-          code: "CSC110",
-          title: "Introduction to Computing",
-          credits: 4,
-          grade: "A"
-        },
-        {
-          code: "MAT110",
-          title: "College Mathematics",
-          credits: 4,
-          grade: "B+"
-        }
-      ]
-    }
-  ];
+  const currentUser = getCurrentUser();
 
-  const gradePoints = {
-    A: 4,
-    "B+": 3.5,
-    B: 3,
-    "C+": 2.5,
-    C: 2,
-    "D+": 1.5,
-    D: 1,
-    F: 0
-  };
+  const [student, setStudent] = useState(null);
+  const [records, setRecords] = useState([]);
+  const [groupedByTerm, setGroupedByTerm] = useState({});
+  const [totalCreditsEarned, setTotalCreditsEarned] = useState(0);
 
-  const allCourses = records.flatMap(
-    (record) => record.courses
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const loadRecord = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const data = await getMyRecord();
+
+        setStudent(data.student || null);
+
+        setRecords(
+          data.records || []
+        );
+
+        setGroupedByTerm(
+          data.groupedByTerm || {}
+        );
+
+        setTotalCreditsEarned(
+          data.totalCreditsEarned || 0
+        );
+      } catch (err) {
+        setError(
+          err.message ||
+          "Could not load your academic record."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadRecord();
+  }, []);
+
+  const passedCourses = records.filter(
+    (record) => record.passed
   );
 
-  const passedCourses = allCourses.filter(
-    (course) => course.grade !== "F"
+  const failedCourses = records.filter(
+    (record) => record.retakeRequired
   );
 
-  const completedCredits = passedCourses.reduce(
-    (total, course) => total + course.credits,
-    0
-  );
-
-  const totalGradePoints = allCourses.reduce(
-    (total, course) =>
-      total +
-      gradePoints[course.grade] * course.credits,
-    0
-  );
-
-  const attemptedCredits = allCourses.reduce(
-    (total, course) => total + course.credits,
-    0
-  );
-
-  const gpa =
-    attemptedCredits > 0
-      ? (totalGradePoints / attemptedCredits).toFixed(2)
-      : "0.00";
-
-  const failedCourses = allCourses.filter(
-    (course) => course.grade === "F"
-  );
+  const termEntries = Object.entries(
+    groupedByTerm
+  ).reverse();
 
   return (
     <div className="student-layout">
@@ -120,162 +74,282 @@ function AcademicRecord() {
       <main className="main">
         <Header
           title="Academic Record"
-          name="Student"
+          name={
+            student?.name ||
+            currentUser?.name ||
+            "Student"
+          }
           role="Student"
         />
 
-        <div className="cards">
-          <div className="card">
-            <div className="card-icon blue">
-              🎓
-            </div>
+        {loading && (
+          <Loading
+            message="Loading academic record..."
+          />
+        )}
 
-            <div>
-              <p>Credits Earned</p>
-              <h2>{completedCredits}</h2>
-              <span>of 160 required</span>
-            </div>
-          </div>
+        {error && (
+          <ErrorMessage
+            message={error}
+          />
+        )}
 
-          <div className="card">
-            <div className="card-icon green">
-              📈
-            </div>
+        {!loading && !error && (
+          <>
+            <div className="cards">
+              <div className="card">
+                <div className="card-icon blue">
+                  🎓
+                </div>
 
-            <div>
-              <p>GPA</p>
-              <h2>{gpa}</h2>
-              <span>Cumulative GPA</span>
-            </div>
-          </div>
+                <div>
+                  <p>
+                    Credits Earned
+                  </p>
 
-          <div className="card">
-            <div className="card-icon orange">
-              📚
-            </div>
+                  <h2>
+                    {totalCreditsEarned}
+                  </h2>
 
-            <div>
-              <p>Completed Courses</p>
-              <h2>{passedCourses.length}</h2>
-              <span>Passed courses</span>
-            </div>
-          </div>
+                  <span>
+                    of 160 credits
+                  </span>
+                </div>
+              </div>
 
-          <div className="card">
-            <div className="card-icon purple">
-              ⚠️
-            </div>
+              <div className="card">
+                <div className="card-icon green">
+                  ✓
+                </div>
 
-            <div>
-              <p>Retakes Required</p>
-              <h2>{failedCourses.length}</h2>
-              <span>Failed courses</span>
-            </div>
-          </div>
-        </div>
+                <div>
+                  <p>
+                    Courses Passed
+                  </p>
 
-        {failedCourses.length > 0 && (
-          <section className="panel retake-panel">
-            <div className="panel-header">
-              <div>
-                <h2>Retake Required</h2>
-                <p>
-                  These courses must be completed again.
-                </p>
+                  <h2>
+                    {passedCourses.length}
+                  </h2>
+
+                  <span>
+                    completed courses
+                  </span>
+                </div>
+              </div>
+
+              <div className="card">
+                <div className="card-icon orange">
+                  📚
+                </div>
+
+                <div>
+                  <p>
+                    Total Records
+                  </p>
+
+                  <h2>
+                    {records.length}
+                  </h2>
+
+                  <span>
+                    academic history
+                  </span>
+                </div>
+              </div>
+
+              <div className="card">
+                <div className="card-icon purple">
+                  ↻
+                </div>
+
+                <div>
+                  <p>
+                    Retakes Required
+                  </p>
+
+                  <h2>
+                    {failedCourses.length}
+                  </h2>
+
+                  <span>
+                    courses graded F
+                  </span>
+                </div>
               </div>
             </div>
 
-            {failedCourses.map((course) => (
-              <div
-                className="retake-course"
-                key={course.code}
-              >
+            {failedCourses.length > 0 && (
+              <section className="panel retake-panel">
+                <div className="panel-header">
+                  <div>
+                    <h2>
+                      Retake Required
+                    </h2>
+
+                    <p>
+                      Courses with a grade of F
+                      must be retaken.
+                    </p>
+                  </div>
+                </div>
+
+                {failedCourses.map(
+                  (record) => (
+                    <div
+                      className="retake-course"
+                      key={record.id}
+                    >
+                      <div>
+                        <strong>
+                          {record.course?.code}
+                          {" - "}
+                          {record.course?.title}
+                        </strong>
+
+                        <p>
+                          {record.term}
+                          {" • Grade "}
+                          {record.grade}
+                        </p>
+                      </div>
+
+                      <span className="retake-badge">
+                        Retake Required
+                      </span>
+                    </div>
+                  )
+                )}
+              </section>
+            )}
+
+            <section className="panel">
+              <div className="panel-header">
                 <div>
-                  <strong>
-                    {course.code} — {course.title}
-                  </strong>
+                  <h2>
+                    Academic History
+                  </h2>
 
                   <p>
-                    Previous grade: {course.grade}
+                    Completed courses grouped
+                    by term
                   </p>
                 </div>
 
-                <span className="retake-badge">
-                  Retake Required
-                </span>
+                {student?.studentId && (
+                  <span className="graduation">
+                    {student.studentId}
+                  </span>
+                )}
               </div>
-            ))}
-          </section>
-        )}
 
-        <section className="panel">
-          <div className="panel-header">
-            <div>
-              <h2>Course History</h2>
-              <p>
-                Completed and attempted courses by term
-              </p>
-            </div>
-          </div>
+              {termEntries.length === 0 ? (
+                <div className="browse-empty">
+                  <h3>
+                    No academic records
+                  </h3>
 
-          <div className="record-terms">
-            {records.map((record) => (
-              <div
-                className="record-term"
-                key={record.term}
-              >
-                <h3>
-                  Term {record.term}
-                </h3>
-
-                <div className="record-table">
-                  <div className="record-row record-heading">
-                    <span>Course</span>
-                    <span>Title</span>
-                    <span>Credits</span>
-                    <span>Grade</span>
-                    <span>Status</span>
-                  </div>
-
-                  {record.courses.map((course) => (
-                    <div
-                      className="record-row"
-                      key={course.code}
-                    >
-                      <strong>{course.code}</strong>
-
-                      <span>{course.title}</span>
-
-                      <span>{course.credits}</span>
-
-                      <strong
-                        className={
-                          course.grade === "F"
-                            ? "grade-fail"
-                            : ""
-                        }
-                      >
-                        {course.grade}
-                      </strong>
-
-                      <span>
-                        {course.grade === "F" ? (
-                          <span className="retake-badge">
-                            Retake Required
-                          </span>
-                        ) : (
-                          <span className="status add-drop-open">
-                            Passed
-                          </span>
-                        )}
-                      </span>
-                    </div>
-                  ))}
+                  <p>
+                    No completed courses
+                    were found.
+                  </p>
                 </div>
-              </div>
-            ))}
-          </div>
-        </section>
+              ) : (
+                <div className="record-terms">
+
+                  {termEntries.map(
+                    ([term, termRecords]) => (
+                      <div
+                        className="record-term"
+                        key={term}
+                      >
+                        <h3>
+                          Term {term}
+                        </h3>
+
+                        <div className="record-table">
+
+                          <div className="record-row record-heading">
+                            <span>
+                              Course
+                            </span>
+
+                            <span>
+                              Title
+                            </span>
+
+                            <span>
+                              Credits
+                            </span>
+
+                            <span>
+                              Grade
+                            </span>
+
+                            <span>
+                              Status
+                            </span>
+                          </div>
+
+                          {termRecords.map(
+                            (record) => (
+                              <div
+                                className="record-row"
+                                key={record.id}
+                              >
+                                <strong>
+                                  {record.course
+                                    ?.code ||
+                                    "N/A"}
+                                </strong>
+
+                                <span>
+                                  {record.course
+                                    ?.title ||
+                                    "Unknown Course"}
+                                </span>
+
+                                <span>
+                                  {record.course
+                                    ?.credits ||
+                                    0}
+                                </span>
+
+                                <strong
+                                  className={
+                                    record.grade ===
+                                    "F"
+                                      ? "grade-fail"
+                                      : ""
+                                  }
+                                >
+                                  {record.grade}
+                                </strong>
+
+                                <span>
+                                  {record.retakeRequired
+                                    ? (
+                                      <span className="retake-badge">
+                                        Retake Required
+                                      </span>
+                                    )
+                                    : record.passed
+                                      ? "Passed"
+                                      : "Not completed"}
+                                </span>
+                              </div>
+                            )
+                          )}
+
+                        </div>
+                      </div>
+                    )
+                  )}
+
+                </div>
+              )}
+            </section>
+          </>
+        )}
       </main>
     </div>
   );

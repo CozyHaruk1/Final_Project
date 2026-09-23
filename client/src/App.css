@@ -1377,7 +1377,7 @@ textarea {
 
 
 /* =========================
-   ADD / DROP COURSE CARDS
+   ADD / DROP COURSE LIST
 ========================= */
 
 .add-drop-course-list {
@@ -1388,41 +1388,37 @@ textarea {
 
 .add-drop-course-card {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
 
-  gap: 20px;
+  gap: 24px;
 
-  padding: 18px;
+  padding: 20px;
+
+  background: #ffffff;
 
   border: 1px solid #e5e7eb;
   border-radius: 12px;
 
-  background: #ffffff;
+  transition: 0.2s ease;
+}
+
+.add-drop-course-card:hover {
+  border-color: #cbd5e1;
+
+  box-shadow:
+    0 4px 14px
+    rgba(15, 23, 42, 0.05);
 }
 
 .add-drop-course-info {
-  display: flex;
-  align-items: center;
-
-  gap: 16px;
-}
-
-.add-drop-course-code {
-  min-width: 72px;
-  height: 58px;
+  flex: 1;
 
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
 
-  background: #eff6ff;
-  color: #2563eb;
-
-  border-radius: 10px;
-
-  font-size: 13px;
-  font-weight: 700;
+  gap: 24px;
 }
 
 .add-drop-course-info h3 {
@@ -1430,39 +1426,50 @@ textarea {
 
   font-size: 15px;
 
-  margin-bottom: 6px;
+  margin: 6px 0 5px;
 }
 
 .add-drop-course-info p {
   color: #6b7280;
 
   font-size: 12px;
+  line-height: 1.5;
 
-  margin-bottom: 5px;
+  margin: 0;
 }
 
-.add-drop-course-info small {
-  color: #9ca3af;
 
-  font-size: 11px;
-}
+/* =========================
+   REQUEST BUTTON
+========================= */
 
 .add-drop-course-action {
   display: flex;
   align-items: center;
 
-  gap: 12px;
+  flex-shrink: 0;
 }
 
-.add-drop-course-action .request-btn {
-  text-decoration: none;
-  display: inline-block;
+.add-drop-course-action button {
+  padding: 10px 16px;
+
+  border: none;
+  border-radius: 8px;
+
+  background: #2563eb;
+  color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
 }
 
-
-/* =========================
-   DISABLED REQUEST BUTTON
-========================= */
+.add-drop-course-action button:hover {
+  background: #1d4ed8;
+}
 
 .disabled-request {
   background: #e5e7eb !important;
@@ -1477,157 +1484,197 @@ textarea {
 
 
 /* =========================
-   ADD / DROP INSTRUCTIONS
+   REQUEST PANEL
 ========================= */
 
-.add-drop-instructions {
+.request-content {
   margin-top: 20px;
+
+  border-color: #dbeafe;
+
+  box-shadow:
+    0 4px 18px
+    rgba(15, 23, 42, 0.05);
 }
 
-.instruction-content {
-  display: grid;
+.request-content .panel-header {
+  padding-bottom: 18px;
+  margin-bottom: 20px;
 
-  grid-template-columns:
-    minmax(0, 1.5fr)
-    minmax(280px, 1fr);
+  border-bottom: 1px solid #e5e7eb;
+}
 
-  gap: 24px;
+.request-content .panel-header h2 {
+  font-size: 20px;
+}
+
+.request-content .panel-header p {
+  color: #6b7280;
 }
 
 
 /* =========================
-   INSTRUCTION STEPS
+   CLOSE BUTTON
 ========================= */
 
-.instruction-steps {
+.request-content .panel-header > button {
+  padding: 8px 14px;
+
+  background: #ffffff;
+  color: #374151;
+
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.request-content .panel-header > button:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+
+/* =========================
+   ADVISOR INFORMATION
+========================= */
+
+.advisor-card {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 20px;
+
+  padding: 18px 20px;
+
+  margin-bottom: 22px;
+
+  background: #f8fafc;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.advisor-card > div {
   display: flex;
   flex-direction: column;
 
-  gap: 14px;
+  gap: 6px;
 }
 
-.instruction-step {
-  display: flex;
-  align-items: flex-start;
+.advisor-card span {
+  color: #9ca3af;
 
-  gap: 14px;
+  font-size: 11px;
+  font-weight: 700;
 
-  padding: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.advisor-card strong {
+  color: #374151;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  word-break: break-word;
+}
+
+
+/* =========================
+   REQUEST INSTRUCTIONS
+========================= */
+
+.request-steps {
+  padding: 20px;
 
   background: #f9fafb;
 
-  border: 1px solid #f0f0f0;
-  border-radius: 9px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
 }
 
-.instruction-step > span {
-  width: 28px;
-  height: 28px;
+.request-steps h3 {
+  color: #111827;
 
-  flex-shrink: 0;
+  font-size: 16px;
+
+  margin-bottom: 16px;
+}
+
+.request-steps ol {
+  padding-left: 22px;
 
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
 
-  background: #2563eb;
-  color: #ffffff;
-
-  border-radius: 50%;
-
-  font-size: 12px;
-  font-weight: 700;
+  gap: 11px;
 }
 
-.instruction-step p {
+.request-steps li {
+  padding-left: 4px;
+
   color: #4b5563;
 
   font-size: 13px;
   line-height: 1.6;
 }
 
+.request-steps li::marker {
+  color: #2563eb;
+  font-weight: 700;
+}
 
-/* =========================
-   ADVISOR CARD
-========================= */
+.request-steps li strong {
+  display: inline-block;
 
-.advisor-card {
-  padding: 20px;
+  margin-top: 6px;
 
-  background: #f9fafb;
+  padding: 6px 10px;
+
+  background: #ffffff;
+  color: #1f2937;
 
   border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  border-radius: 6px;
 
-  align-self: start;
-}
-
-.advisor-card h3 {
-  color: #111827;
-
-  font-size: 16px;
-
-  margin-bottom: 18px;
-}
-
-.advisor-detail {
-  display: flex;
-  flex-direction: column;
-
-  gap: 5px;
-
-  padding: 12px 0;
-
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.advisor-detail span {
-  color: #9ca3af;
-
-  font-size: 11px;
-
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-}
-
-.advisor-detail strong,
-.advisor-detail a {
-  color: #374151;
-
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.advisor-detail a {
-  color: #2563eb;
-
-  text-decoration: none;
-}
-
-.advisor-detail a:hover {
-  text-decoration: underline;
+  font-size: 12px;
 }
 
 
 /* =========================
-   DOWNLOAD FORM BUTTON
+   REQUEST ACTIONS
 ========================= */
 
-.download-form-btn {
-  width: 100%;
+.add-drop-request-actions {
+  display: flex;
+  align-items: center;
 
-  display: block;
+  gap: 12px;
 
-  margin-top: 18px;
+  margin-top: 20px;
+}
 
-  padding: 11px 14px;
+.download-form,
+.email-advisor-button {
+  min-height: 42px;
 
-  background: #2563eb;
-  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 18px;
 
   border-radius: 8px;
 
-  text-align: center;
   text-decoration: none;
 
   font-size: 13px;
@@ -1636,8 +1683,39 @@ textarea {
   transition: 0.2s ease;
 }
 
-.download-form-btn:hover {
+.download-form {
+  background: #2563eb;
+  color: #ffffff;
+
+  border: 1px solid #2563eb;
+}
+
+.download-form:hover {
   background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.email-advisor-button {
+  background: #ffffff;
+  color: #2563eb;
+
+  border: 1px solid #2563eb;
+}
+
+.email-advisor-button:hover {
+  background: #eff6ff;
+}
+
+.add-drop-request-actions .disabled-request {
+  min-height: 42px;
+
+  padding: 0 18px;
+
+  border: none;
+  border-radius: 8px;
+
+  font-size: 13px;
+  font-weight: 600;
 }
 
 
@@ -1646,39 +1724,87 @@ textarea {
 ========================= */
 
 @media (max-width: 900px) {
-  .instruction-content {
+
+  .advisor-card {
     grid-template-columns: 1fr;
   }
 }
 
+
 @media (max-width: 700px) {
+
   .add-drop-course-card {
-    align-items: flex-start;
+    align-items: stretch;
     flex-direction: column;
   }
 
-  .add-drop-course-action {
-    width: 100%;
-
-    justify-content: space-between;
-  }
-}
-
-@media (max-width: 500px) {
   .add-drop-course-info {
     align-items: flex-start;
     flex-direction: column;
+
+    gap: 12px;
   }
 
   .add-drop-course-action {
+    width: 100%;
+  }
+
+  .add-drop-course-action button {
+    width: 100%;
+  }
+
+  .add-drop-request-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .download-form,
+  .email-advisor-button,
+  .add-drop-request-actions .disabled-request {
+    width: 100%;
+  }
+}
+
+/* =========================
+   BROWSE ADD / DROP NOTICE
+========================= */
+
+.browse-add-drop-note {
+  margin-top: 14px;
+
+  padding: 10px 12px;
+
+  background: #eff6ff;
+  color: #2563eb;
+
+  border: 1px solid #dbeafe;
+  border-radius: 8px;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+@media (max-width: 500px) {
+
+  .request-content {
+    padding: 18px;
+  }
+
+  .advisor-card {
+    padding: 16px;
+  }
+
+  .request-steps {
+    padding: 16px;
+  }
+
+  .request-content .panel-header {
     align-items: flex-start;
     flex-direction: column;
   }
 
-  .add-drop-course-action .request-btn {
+  .request-content .panel-header > button {
     width: 100%;
-
-    text-align: center;
   }
 }
 

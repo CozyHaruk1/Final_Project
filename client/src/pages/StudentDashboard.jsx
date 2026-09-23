@@ -1,532 +1,491 @@
-import React from "react";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import StatCard from "../components/StatCard";
+import Loading from "../components/Loading";
+import ErrorMessage from "../components/ErrorMessage";
 
-const h = React.createElement;
+import {
+  getCurrentUser,
+  getMyRegistrations,
+  getMyRecord
+} from "../services/api";
 
 function StudentDashboard() {
-  // Temporary demo data.
-  // Later this will come from api.js / MongoDB.
-  const student = {
-    name: "Student",
-    role: "Student",
-    currentCredits: 12,
-    completedCredits: 88,
-    registeredCourses: 3,
-    requiredCredits: 160
-  };
+  const currentUser = getCurrentUser();
 
-  const currentCourses = [
-    {
-      id: 1,
-      code: "CSC220",
-      title: "Web Development II",
-      section: "01",
-      day: "Monday",
-      time: "08:30 - 10:30",
-      room: "B302",
-      instructor: "Dr. Smith",
-      credits: 4,
-      addDropOpen: true,
-      closingDate: "30 Sep 2026"
+  const [student, setStudent] = useState(null);
+  const [registrations, setRegistrations] = useState([]);
+  const [records, setRecords] = useState([]);
+  const [totalCreditsEarned, setTotalCreditsEarned] = useState(0);
+  const [term, setTerm] = useState("");
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const loadDashboard = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const [
+          registrationData,
+          recordData
+        ] = await Promise.all([
+          getMyRegistrations(),
+          getMyRecord()
+        ]);
+
+        setRegistrations(
+          registrationData.registrations || []
+        );
+
+        setTerm(
+          registrationData.term || ""
+        );
+
+        setStudent(
+          recordData.student || null
+        );
+
+        setRecords(
+          recordData.records || []
+        );
+
+        setTotalCreditsEarned(
+          recordData.totalCreditsEarned || 0
+        );
+      } catch (err) {
+        setError(
+          err.message ||
+          "Could not load dashboard."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDashboard();
+  }, []);
+
+  const currentCredits = registrations.reduce(
+    (total, registration) => {
+      return (
+        total +
+        (
+          registration.offering
+            ?.courseId
+            ?.credits || 0
+        )
+      );
     },
-
-    {
-      id: 2,
-      code: "ITE321",
-      title:
-        "Systems Analysis, Design & Implementation",
-      section: "02",
-      day: "Wednesday",
-      time: "10:30 - 12:30",
-      room: "A204",
-      instructor: "Prof. Lee",
-      credits: 4,
-      addDropOpen: false,
-      closingDate: null
-    },
-
-    {
-      id: 3,
-      code: "ITE420",
-      title: "Information Security",
-      section: "01",
-      day: "Friday",
-      time: "13:00 - 15:00",
-      room: "C105",
-      instructor: "Dr. Taylor",
-      credits: 4,
-      addDropOpen: true,
-      closingDate: "30 Sep 2026"
-    }
-  ];
-
-  const failedCourses = [
-    {
-      code: "CSC210",
-      title: "Data Structures",
-      grade: "F"
-    }
-  ];
-
-  const progressPercentage = Math.round(
-    (
-      student.completedCredits /
-      student.requiredCredits
-    ) * 100
+    0
   );
 
-  const remainingCredits =
-    student.requiredCredits -
-    student.completedCredits;
-
-  const availableCredits =
-    16 - student.currentCredits;
-
-  const currentCourseElements =
-    currentCourses.map((course) =>
-      h(
-        "div",
-        {
-          className: "course",
-          key: course.id
-        },
-
-        h(
-          "div",
-          { className: "course-code" },
-
-          h(
-            "strong",
-            null,
-            course.code
-          ),
-
-          h(
-            "span",
-            null,
-            `Sec ${course.section}`
-          )
-        ),
-
-        h(
-          "div",
-          { className: "course-info" },
-
-          h(
-            "h3",
-            null,
-            course.title
-          ),
-
-          h(
-            "p",
-            null,
-            `${course.day} · ${course.time}`
-          ),
-
-          h(
-            "p",
-            null,
-            `${course.room} · ${course.instructor}`
-          )
-        ),
-
-        h(
-          "div",
-          { className: "course-credit" },
-
-          h(
-            "strong",
-            null,
-            course.credits
-          ),
-
-          h(
-            "small",
-            null,
-            "Credits"
-          )
-        ),
-
-        h(
-          "span",
-          {
-            className:
-              course.addDropOpen
-                ? "status add-drop-open"
-                : "status add-drop-closed"
-          },
-
-          course.addDropOpen
-            ? "Add/Drop Open"
-            : "Add/Drop Closed"
-        )
-      )
-    );
-
-  const addDropElements =
-    currentCourses.map((course) =>
-      h(
-        "div",
-        {
-          className: "add-drop-item",
-          key: course.id
-        },
-
-        h(
-          "div",
-          null,
-
-          h(
-            "strong",
-            null,
-            `${course.code} - Section ${course.section}`
-          ),
-
-          course.addDropOpen
-            ? h(
-                "p",
-                null,
-                `Open until ${course.closingDate}`
-              )
-            : h(
-                "p",
-                null,
-                "Add/drop window is closed"
-              )
-        ),
-
-        course.addDropOpen
-          ? h(
-              "button",
-              {
-                className: "request-btn"
-              },
-              "Request"
-            )
-          : h(
-              "span",
-              {
-                className: "closed-label"
-              },
-              "Closed"
-            )
-      )
-    );
-
-  const failedCourseElements =
-    failedCourses.map((course) =>
-      h(
-        "div",
-        {
-          className: "retake-course",
-          key: course.code
-        },
-
-        h(
-          "div",
-          null,
-
-          h(
-            "strong",
-            null,
-            `${course.code} - ${course.title}`
-          ),
-
-          h(
-            "p",
-            null,
-            `Previous grade: ${course.grade}`
-          )
-        ),
-
-        h(
-          "span",
-          {
-            className: "retake-badge"
-          },
-          "Retake Required"
-        )
-      )
-    );
-
-  return h(
-    "div",
-    {
-      className: "student-layout"
-    },
-
-    h(Sidebar),
-
-    h(
-      "main",
-      {
-        className: "main"
-      },
-
-      h(Header, {
-        name: student.name,
-        role: student.role
-      }),
-
-      h(
-        "section",
-        {
-          className: "cards"
-        },
-
-        h(StatCard, {
-          icon: "📚",
-          title: "Current Credits",
-          value: `${student.currentCredits} / 16`,
-          subtitle:
-            `${availableCredits} credits available`,
-          type: "blue"
-        }),
-
-        h(StatCard, {
-          icon: "✓",
-          title: "Completed Credits",
-          value: student.completedCredits,
-          subtitle:
-            `of ${student.requiredCredits} required`,
-          type: "green"
-        }),
-
-        h(StatCard, {
-          icon: "📖",
-          title: "Registered Courses",
-          value: student.registeredCourses,
-          subtitle: "This semester",
-          type: "orange"
-        }),
-
-        h(StatCard, {
-          icon: "🎓",
-          title: "Progress",
-          value: `${progressPercentage}%`,
-          subtitle: "Degree completion",
-          type: "purple"
-        })
-      ),
-
-      h(
-        "section",
-        {
-          className: "content-grid"
-        },
-
-        h(
-          "div",
-          {
-            className:
-              "panel courses-panel"
-          },
-
-          h(
-            "div",
-            {
-              className: "panel-header"
-            },
-
-            h(
-              "div",
-              null,
-
-              h(
-                "h2",
-                null,
-                "Current Courses"
-              ),
-
-              h(
-                "p",
-                null,
-                "Courses registered for the current semester"
-              )
-            ),
-
-            h(
-              "button",
-              {
-                className: "outline-btn"
-              },
-              "View All"
-            )
-          ),
-
-          h(
-            "div",
-            {
-              className: "current-courses"
-            },
-            currentCourseElements
-          )
-        ),
-
-        h(
-          "div",
-          {
-            className:
-              "panel add-drop-panel"
-          },
-
-          h(
-            "div",
-            {
-              className: "panel-header"
-            },
-
-            h(
-              "div",
-              null,
-
-              h(
-                "h2",
-                null,
-                "Add / Drop Status"
-              ),
-
-              h(
-                "p",
-                null,
-                "Courses currently available for change requests"
-              )
-            )
-          ),
-
-          h(
-            "div",
-            {
-              className: "add-drop-list"
-            },
-            addDropElements
-          )
-        )
-      ),
-
-      failedCourses.length > 0
-        ? h(
-            "section",
-            {
-              className:
-                "panel retake-panel"
-            },
-
-            h(
-              "div",
-              {
-                className: "panel-header"
-              },
-
-              h(
-                "div",
-                null,
-
-                h(
-                  "h2",
-                  null,
-                  "Retake Required"
-                ),
-
-                h(
-                  "p",
-                  null,
-                  "Courses with a grade of F must be retaken"
-                )
-              )
-            ),
-
-            failedCourseElements
-          )
-        : null,
-
-      h(
-        "section",
-        {
-          className:
-            "panel progress-panel"
-        },
-
-        h(
-          "div",
-          {
-            className: "panel-header"
-          },
-
-          h(
-            "div",
-            null,
-
-            h(
-              "h2",
-              null,
-              "Academic Progress"
-            ),
-
-            h(
-              "p",
-              null,
-              "Degree completion overview"
-            )
-          ),
-
-          h(
-            "span",
-            {
-              className: "graduation"
-            },
-            `🎓 ${remainingCredits} Credits Remaining`
-          )
-        ),
-
-        h(
-          "div",
-          {
-            className:
-              "progress-container"
-          },
-
-          h(
-            "div",
-            {
-              className:
-                "progress-label"
-            },
-
-            h(
-              "span",
-              null,
-              "Completed Credits"
-            ),
-
-            h(
-              "strong",
-              null,
-              `${student.completedCredits} / ${student.requiredCredits}`
-            )
-          ),
-
-          h(
-            "div",
-            {
-              className: "progress-bar"
-            },
-
-            h("div", {
-              className: "progress-fill",
-              style: {
-                width:
-                  `${progressPercentage}%`
-              }
-            })
-          )
-        )
-      )
+  const failedCourses = records.filter(
+    (record) => record.retakeRequired
+  );
+
+  const graduationTarget = 160;
+
+  const progressPercent = Math.min(
+    100,
+    Math.round(
+      (totalCreditsEarned /
+        graduationTarget) *
+        100
     )
+  );
+
+  return (
+    <div className="student-layout">
+      <Sidebar />
+
+      <main className="main">
+        <Header
+          title="Dashboard"
+          name={
+            student?.name ||
+            currentUser?.name ||
+            "Student"
+          }
+          role="Student"
+        />
+
+        {loading && (
+          <Loading
+            message="Loading dashboard..."
+          />
+        )}
+
+        {error && (
+          <ErrorMessage
+            message={error}
+          />
+        )}
+
+        {!loading && !error && (
+          <>
+            <div className="cards">
+              <div className="card">
+                <div className="card-icon blue">
+                  📚
+                </div>
+
+                <div>
+                  <p>
+                    Current Credits
+                  </p>
+
+                  <h2>
+                    {currentCredits} / 16
+                  </h2>
+
+                  <span>
+                    {registrations.length}
+                    {" "}
+                    registered courses
+                  </span>
+                </div>
+              </div>
+
+              <div className="card">
+                <div className="card-icon green">
+                  ✓
+                </div>
+
+                <div>
+                  <p>
+                    Credits Earned
+                  </p>
+
+                  <h2>
+                    {totalCreditsEarned}
+                  </h2>
+
+                  <span>
+                    of 160 credits
+                  </span>
+                </div>
+              </div>
+
+              <div className="card">
+                <div className="card-icon orange">
+                  🎓
+                </div>
+
+                <div>
+                  <p>
+                    Current Term
+                  </p>
+
+                  <h2>
+                    {term || "N/A"}
+                  </h2>
+
+                  <span>
+                    {student?.studentId ||
+                      "Student"}
+                  </span>
+                </div>
+              </div>
+
+              <div className="card">
+                <div className="card-icon purple">
+                  📊
+                </div>
+
+                <div>
+                  <p>
+                    Progress
+                  </p>
+
+                  <h2>
+                    {progressPercent}%
+                  </h2>
+
+                  <span>
+                    toward graduation
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {failedCourses.length > 0 && (
+              <section className="panel retake-panel">
+                <div className="panel-header">
+                  <div>
+                    <h2>
+                      Retake Required
+                    </h2>
+
+                    <p>
+                      Courses graded F must
+                      be retaken.
+                    </p>
+                  </div>
+                </div>
+
+                {failedCourses.map(
+                  (record) => (
+                    <div
+                      className="retake-course"
+                      key={record.id}
+                    >
+                      <div>
+                        <strong>
+                          {record.course?.code}
+                          {" - "}
+                          {record.course?.title}
+                        </strong>
+
+                        <p>
+                          Grade {record.grade}
+                          {" • "}
+                          {record.term}
+                        </p>
+                      </div>
+
+                      <span className="retake-badge">
+                        Retake Required
+                      </span>
+                    </div>
+                  )
+                )}
+              </section>
+            )}
+
+            <div className="content-grid">
+              <section className="panel">
+                <div className="panel-header">
+                  <div>
+                    <h2>
+                      Current Courses
+                    </h2>
+
+                    <p>
+                      Registered courses for{" "}
+                      {term ||
+                        "the current term"}
+                    </p>
+                  </div>
+
+                  <Link
+                    className="outline-btn"
+                    to="/student/courses"
+                  >
+                    View All
+                  </Link>
+                </div>
+
+                <div className="current-courses">
+                  {registrations.length === 0 ? (
+                    <div className="browse-empty">
+                      <h3>
+                        No courses registered
+                      </h3>
+
+                      <p>
+                        No current
+                        registrations were
+                        found.
+                      </p>
+                    </div>
+                  ) : (
+                    registrations.map(
+                      (registration) => {
+                        const offering =
+                          registration.offering;
+
+                        const course =
+                          offering?.courseId;
+
+                        if (
+                          !offering ||
+                          !course
+                        ) {
+                          return null;
+                        }
+
+                        return (
+                          <div
+                            className="course"
+                            key={registration.id}
+                          >
+                            <div className="course-code">
+                              <strong>
+                                {course.code}
+                              </strong>
+
+                              <span>
+                                Sec{" "}
+                                {offering.section}
+                              </span>
+                            </div>
+
+                            <div className="course-info">
+                              <h3>
+                                {course.title}
+                              </h3>
+
+                              <p>
+                                {offering.day}
+                                {" • "}
+                                {offering.startTime}
+                                {" - "}
+                                {offering.endTime}
+                              </p>
+
+                              <p>
+                                {offering.room ||
+                                  "TBA"}
+                                {" • "}
+                                {offering.instructor ||
+                                  "TBA"}
+                              </p>
+                            </div>
+
+                            <div className="course-credit">
+                              <strong>
+                                {course.credits}
+                              </strong>
+
+                              <small>
+                                Credits
+                              </small>
+                            </div>
+                          </div>
+                        );
+                      }
+                    )
+                  )}
+                </div>
+              </section>
+
+              <section className="panel">
+                <div className="panel-header">
+                  <div>
+                    <h2>
+                      Add / Drop
+                    </h2>
+
+                    <p>
+                      Current request status
+                    </p>
+                  </div>
+
+                  <Link
+                    className="outline-btn"
+                    to="/student/add-drop"
+                  >
+                    Open Page
+                  </Link>
+                </div>
+
+                <div className="add-drop-list">
+                  {registrations.map(
+                    (registration) => {
+                      const offering =
+                        registration.offering;
+
+                      const course =
+                        offering?.courseId;
+
+                      if (
+                        !offering ||
+                        !course
+                      ) {
+                        return null;
+                      }
+
+                      return (
+                        <div
+                          className="add-drop-item"
+                          key={registration.id}
+                        >
+                          <div>
+                            <strong>
+                              {course.code}
+                            </strong>
+
+                            <p>
+                              Section{" "}
+                              {offering.section}
+                            </p>
+                          </div>
+
+                          <span
+                            className={
+                              offering.addDropOpen
+                                ? "status add-drop-open"
+                                : "status add-drop-closed"
+                            }
+                          >
+                            {offering.addDropOpen
+                              ? "Open"
+                              : "Closed"}
+                          </span>
+                        </div>
+                      );
+                    }
+                  )}
+                </div>
+              </section>
+            </div>
+
+            <section className="panel progress-panel">
+              <div className="panel-header">
+                <div>
+                  <h2>
+                    Academic Progress
+                  </h2>
+
+                  <p>
+                    Progress toward
+                    graduation requirement
+                  </p>
+                </div>
+
+                <span className="graduation">
+                  {Math.max(
+                    0,
+                    graduationTarget -
+                      totalCreditsEarned
+                  )}
+                  {" "}
+                  credits remaining
+                </span>
+              </div>
+
+              <div className="progress-container">
+                <div className="progress-label">
+                  <span>
+                    {totalCreditsEarned} credits
+                    earned
+                  </span>
+
+                  <strong>
+                    {progressPercent}%
+                  </strong>
+                </div>
+
+                <div className="progress-bar">
+                  <div
+                    className="progress-fill"
+                    style={{
+                      width:
+                        `${progressPercent}%`
+                    }}
+                  />
+                </div>
+              </div>
+            </section>
+          </>
+        )}
+      </main>
+    </div>
   );
 }
 
