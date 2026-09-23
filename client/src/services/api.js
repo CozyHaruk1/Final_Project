@@ -26,19 +26,22 @@ export const logout = () => {
 const apiRequest = async (endpoint, options = {}) => {
   const token = getToken();
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    ...options,
+  const response = await fetch(
+    `${API_BASE_URL}${endpoint}`,
+    {
+      ...options,
 
-    headers: {
-      "Content-Type": "application/json",
+      headers: {
+        "Content-Type": "application/json",
 
-      ...(token && {
-        Authorization: `Bearer ${token}`
-      }),
+        ...(token && {
+          Authorization: `Bearer ${token}`
+        }),
 
-      ...options.headers
+        ...options.headers
+      }
     }
-  });
+  );
 
   let data = {};
 
@@ -49,21 +52,51 @@ const apiRequest = async (endpoint, options = {}) => {
   }
 
   if (!response.ok) {
-    throw new Error(data.message || "Something went wrong.");
+    throw new Error(
+      data.message ||
+      "Something went wrong."
+    );
   }
 
   return data;
 };
 
-export const login = async (email, password) => {
-  return apiRequest("/auth/login", {
-    method: "POST",
+export const login = async (
+  email,
+  password
+) => {
+  return apiRequest(
+    "/auth/login",
+    {
+      method: "POST",
 
-    body: JSON.stringify({
-      email,
-      password
-    })
-  });
+      body: JSON.stringify({
+        email,
+        password
+      })
+    }
+  );
 };
+
+export const getMyRegistrations =
+  async () => {
+    return apiRequest(
+      "/me/registrations"
+    );
+  };
+
+export const getMyRecord =
+  async () => {
+    return apiRequest(
+      "/me/record"
+    );
+  };
+
+export const getOfferings =
+  async (term = "2026-1") => {
+    return apiRequest(
+      `/offerings?term=${term}`
+    );
+  };
 
 export default apiRequest;

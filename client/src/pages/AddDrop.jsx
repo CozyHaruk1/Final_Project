@@ -1,57 +1,85 @@
+import { useEffect, useState } from "react";
+
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
+import Loading from "../components/Loading";
+import ErrorMessage from "../components/ErrorMessage";
+
+import {
+  getCurrentUser,
+  getMyRegistrations
+} from "../services/api";
 
 function AddDrop() {
-  const advisor = {
-    name: "Dr. Sarah Lee",
-    email: "advisor@stamford.edu"
+  const user = getCurrentUser();
+
+  const [registrations, setRegistrations] = useState([]);
+  const [advisor, setAdvisor] = useState(null);
+  const [term, setTerm] = useState("");
+
+  const [selectedRegistration, setSelectedRegistration] =
+    useState(null);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const loadAddDropData = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const data = await getMyRegistrations();
+
+        setRegistrations(
+          data.registrations || []
+        );
+
+        setAdvisor(
+          data.advisor || null
+        );
+
+        setTerm(
+          data.term || ""
+        );
+      } catch (err) {
+        setError(
+          err.message ||
+          "Could not load add/drop information."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAddDropData();
+  }, []);
+
+  const handleRequest = (registration) => {
+    setSelectedRegistration(registration);
   };
 
-  // Temporary data until we connect the backend.
-  const courses = [
-    {
-      id: 1,
-      code: "CSC220",
-      title: "Web Development II",
-      section: "01",
-      day: "Monday",
-      time: "08:30 - 10:30",
-      addDropOpen: true,
-      closingDate: "30 Sep 2026"
-    },
-    {
-      id: 2,
-      code: "ITE321",
-      title: "Systems Analysis, Design & Implementation",
-      section: "02",
-      day: "Wednesday",
-      time: "10:30 - 12:30",
-      addDropOpen: false,
-      closingDate: null
-    },
-    {
-      id: 3,
-      code: "ITE420",
-      title: "Information Security",
-      section: "01",
-      day: "Friday",
-      time: "13:00 - 15:00",
-      addDropOpen: true,
-      closingDate: "30 Sep 2026"
-    }
-  ];
+  const closeRequest = () => {
+    setSelectedRegistration(null);
+  };
 
-  const studentId = "ST001";
+  const selectedOffering =
+    selectedRegistration?.offering;
 
-  function getEmailLink(course) {
-    const subject =
-      `Add/Drop Request - ${studentId} - ${course.code}`;
+  const selectedCourse =
+    selectedOffering?.courseId;
 
-    return (
-      `mailto:${advisor.email}` +
-      `?subject=${encodeURIComponent(subject)}`
-    );
-  }
+  const emailSubject =
+    selectedCourse
+      ? `Add/Drop Request - ${user?.studentId || "Student"} - ${selectedCourse.code}`
+      : "";
+
+  const mailtoLink =
+    advisor?.email
+      ? `mailto:${advisor.email}?subject=${encodeURIComponent(
+          emailSubject
+        )}`
+      : "#";
 
   return (
     <div className="student-layout">
@@ -60,193 +88,274 @@ function AddDrop() {
       <main className="main">
         <Header
           title="Add / Drop"
-          name="Student"
+          name={user?.name || "Student"}
           role="Student"
         />
 
         <div className="add-drop-page-intro">
           <div>
-            <h2>Add / Drop Requests</h2>
+            <h2>
+              Add / Drop Requests
+            </h2>
 
             <p>
-              Check the status of your registered courses
-              and request a change when the add/drop window
-              is open.
+              View the add/drop status of your
+              registered courses for{" "}
+              {term || "the current term"}.
             </p>
           </div>
         </div>
 
-        <section className="panel">
-          <div className="panel-header">
-            <div>
-              <h2>Registered Courses</h2>
+        {loading && (
+          <Loading
+            message="Loading add/drop information..."
+          />
+        )}
 
-              <p>
-                Add/drop availability for the current term
-              </p>
-            </div>
-          </div>
+        {error && (
+          <ErrorMessage
+            message={error}
+          />
+        )}
 
-          <div className="add-drop-course-list">
-            {courses.map((course) => (
-              <div
-                className="add-drop-course-card"
-                key={course.id}
-              >
-                <div className="add-drop-course-info">
-                  <div className="add-drop-course-code">
-                    {course.code}
-                  </div>
+        {!loading &&
+          !error &&
+          registrations.length === 0 && (
+            <section className="panel">
+              <div className="browse-empty">
+                <h3>
+                  No registered courses
+                </h3>
 
-                  <div>
-                    <h3>{course.title}</h3>
+                <p>
+                  You do not currently have any
+                  courses available for add/drop.
+                </p>
+              </div>
+            </section>
+          )}
 
-                    <p>
-                      Section {course.section}
-                      {" • "}
-                      {course.day}
-                      {" • "}
-                      {course.time}
-                    </p>
+        {!loading &&
+          !error &&
+          registrations.length > 0 && (
+            <section className="panel">
+              <div className="panel-header">
+                <div>
+                  <h2>
+                    Registered Courses
+                  </h2>
 
-                    {course.addDropOpen && (
-                      <small>
-                        Request deadline:{" "}
-                        {course.closingDate}
-                      </small>
-                    )}
-                  </div>
+                  <p>
+                    Request changes only when
+                    add/drop is open.
+                  </p>
+                </div>
+              </div>
+
+              <div className="add-drop-course-list">
+                {registrations.map(
+                  (registration) => {
+                    const offering =
+                      registration.offering;
+
+                    const course =
+                      offering?.courseId;
+
+                    if (!offering || !course) {
+                      return null;
+                    }
+
+                    const isOpen =
+                      offering.addDropOpen === true;
+
+                    return (
+                      <div
+                        className="add-drop-course-card"
+                        key={registration.id}
+                      >
+                        <div className="add-drop-course-info">
+                          <div>
+                            <span className="course-code-label">
+                              {course.code}
+                            </span>
+
+                            <h3>
+                              {course.title}
+                            </h3>
+
+                            <p>
+                              Section{" "}
+                              {offering.section}
+                              {" • "}
+                              {offering.day}
+                              {" • "}
+                              {offering.startTime}
+                              {" - "}
+                              {offering.endTime}
+                            </p>
+                          </div>
+
+                          <span
+                            className={
+                              isOpen
+                                ? "status add-drop-open"
+                                : "status add-drop-closed"
+                            }
+                          >
+                            {isOpen
+                              ? "Add/Drop Open"
+                              : "Add/Drop Closed"}
+                          </span>
+                        </div>
+
+                        <div className="add-drop-course-action">
+                          {isOpen ? (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleRequest(
+                                  registration
+                                )
+                              }
+                            >
+                              Request Add/Drop
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              disabled
+                              className="disabled-request"
+                            >
+                              Requests Closed
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  }
+                )}
+              </div>
+            </section>
+          )}
+
+        {selectedRegistration &&
+          selectedOffering &&
+          selectedCourse && (
+            <section className="panel request-content">
+              <div className="panel-header">
+                <div>
+                  <h2>
+                    Add/Drop Request
+                  </h2>
+
+                  <p>
+                    {selectedCourse.code}
+                    {" - "}
+                    {selectedCourse.title}
+                  </p>
                 </div>
 
-                <div className="add-drop-course-action">
-                  <span
-                    className={
-                      course.addDropOpen
-                        ? "status add-drop-open"
-                        : "status add-drop-closed"
-                    }
-                  >
-                    {course.addDropOpen
-                      ? "Open"
-                      : "Closed"}
+                <button
+                  type="button"
+                  onClick={closeRequest}
+                >
+                  Close
+                </button>
+              </div>
+
+              <div className="advisor-card">
+                <div>
+                  <span>
+                    Academic Advisor
                   </span>
 
-                  {course.addDropOpen ? (
-                    <a
-                      className="request-btn"
-                      href={getEmailLink(course)}
-                    >
-                      Request Add / Drop
-                    </a>
-                  ) : (
-                    <button
-                      className="request-btn disabled-request"
-                      disabled
-                    >
-                      Requests Closed
-                    </button>
-                  )}
+                  <strong>
+                    {advisor?.name ||
+                      "Advisor not assigned"}
+                  </strong>
+                </div>
+
+                <div>
+                  <span>
+                    Email
+                  </span>
+
+                  <strong>
+                    {advisor?.email ||
+                      "No advisor email available"}
+                  </strong>
                 </div>
               </div>
-            ))}
-          </div>
-        </section>
 
-        <section className="panel add-drop-instructions">
-          <div className="panel-header">
-            <div>
-              <h2>How to Request Add / Drop</h2>
+              <div className="request-steps">
+                <h3>
+                  Request Instructions
+                </h3>
 
-              <p>
-                Follow these steps before contacting your
-                advisor.
-              </p>
-            </div>
-          </div>
+                <ol>
+                  <li>
+                    Download and open the
+                    Add/Drop Request form.
+                  </li>
 
-          <div className="instruction-content">
-            <div className="instruction-steps">
-              <div className="instruction-step">
-                <span>1</span>
+                  <li>
+                    Fill in your student ID,
+                    name, term, course code and
+                    section.
+                  </li>
 
-                <p>
-                  Download and open the Add/Drop Request
-                  form.
-                </p>
+                  <li>
+                    State the reason for the
+                    request and sign the form.
+                  </li>
+
+                  <li>
+                    Email the completed form to
+                    your advisor using the
+                    subject:
+                    <br />
+
+                    <strong>
+                      {emailSubject}
+                    </strong>
+                  </li>
+
+                  <li>
+                    Your advisor will confirm by
+                    email after the registration
+                    has been updated.
+                  </li>
+                </ol>
               </div>
 
-              <div className="instruction-step">
-                <span>2</span>
-
-                <p>
-                  Fill in your student ID, name, term,
-                  course code and section.
-                </p>
-              </div>
-
-              <div className="instruction-step">
-                <span>3</span>
-
-                <p>
-                  State the reason for your request and
-                  sign the form.
-                </p>
-              </div>
-
-              <div className="instruction-step">
-                <span>4</span>
-
-                <p>
-                  Email the completed form to your advisor
-                  as an attachment.
-                </p>
-              </div>
-
-              <div className="instruction-step">
-                <span>5</span>
-
-                <p>
-                  Wait for your advisor to confirm the
-                  change by email.
-                </p>
-              </div>
-            </div>
-
-            <div className="advisor-card">
-              <h3>Your Advisor</h3>
-
-              <div className="advisor-detail">
-                <span>Name</span>
-                <strong>{advisor.name}</strong>
-              </div>
-
-              <div className="advisor-detail">
-                <span>Email</span>
-
-                <a href={`mailto:${advisor.email}`}>
-                  {advisor.email}
+              <div className="add-drop-request-actions">
+                <a
+                  className="download-form"
+                  href="/AddDropRequest.pdf"
+                  download
+                >
+                  Download Add/Drop Form
                 </a>
+
+                {advisor?.email ? (
+                  <a
+                    className="email-advisor-button"
+                    href={mailtoLink}
+                  >
+                    Email Advisor
+                  </a>
+                ) : (
+                  <button
+                    type="button"
+                    disabled
+                    className="disabled-request"
+                  >
+                    Advisor Email Unavailable
+                  </button>
+                )}
               </div>
-
-              <div className="advisor-detail">
-                <span>Email Subject</span>
-
-                <strong>
-                  Add/Drop Request - Student ID -
-                  Course Code
-                </strong>
-              </div>
-
-              <a
-                className="download-form-btn"
-                href="/AddDropRequest.pdf"
-                download
-              >
-                Download Add/Drop Form
-              </a>
-            </div>
-          </div>
-        </section>
+            </section>
+          )}
       </main>
     </div>
   );
