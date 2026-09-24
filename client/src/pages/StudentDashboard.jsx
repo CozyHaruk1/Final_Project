@@ -18,11 +18,21 @@ function StudentDashboard() {
   const [student, setStudent] = useState(null);
   const [registrations, setRegistrations] = useState([]);
   const [records, setRecords] = useState([]);
-  const [totalCreditsEarned, setTotalCreditsEarned] = useState(0);
-  const [term, setTerm] = useState("");
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [totalCreditsEarned, setTotalCreditsEarned] =
+    useState(0);
+
+  const [gpa, setGpa] =
+    useState(0);
+
+  const [term, setTerm] =
+    useState("");
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState("");
 
   useEffect(() => {
     const loadDashboard = async () => {
@@ -38,6 +48,10 @@ function StudentDashboard() {
           getMyRecord()
         ]);
 
+        // =========================
+        // CURRENT REGISTRATIONS
+        // =========================
+
         setRegistrations(
           registrationData.registrations || []
         );
@@ -46,17 +60,63 @@ function StudentDashboard() {
           registrationData.term || ""
         );
 
+
+        // =========================
+        // STUDENT INFORMATION
+        // =========================
+
         setStudent(
           recordData.student || null
         );
 
+
+        // =========================
+        // ACADEMIC RECORD
+        // New studentController uses courseId
+        // =========================
+
+        const normalizedRecords =
+          (recordData.records || []).map(
+            (record) => ({
+              id:
+                record._id ||
+                record.id,
+
+              term:
+                record.term,
+
+              course:
+                record.courseId ||
+                record.course,
+
+              grade:
+                record.grade,
+
+              retakeRequired:
+                record.retakeRequired === true
+            })
+          );
+
         setRecords(
-          recordData.records || []
+          normalizedRecords
         );
 
+
+        // =========================
+        // ACADEMIC SUMMARY
+        // =========================
+
+        const summary =
+          recordData.academicSummary || {};
+
         setTotalCreditsEarned(
-          recordData.totalCreditsEarned || 0
+          summary.totalCredits ?? 0
         );
+
+        setGpa(
+          summary.gpa ?? 0
+        );
+
       } catch (err) {
         setError(
           err.message ||
@@ -70,40 +130,63 @@ function StudentDashboard() {
     loadDashboard();
   }, []);
 
-  const currentCredits = registrations.reduce(
-    (total, registration) => {
-      return (
-        total +
-        (
-          registration.offering
-            ?.courseId
-            ?.credits || 0
-        )
-      );
-    },
-    0
-  );
 
-  const failedCourses = records.filter(
-    (record) => record.retakeRequired
-  );
+  // =========================
+  // CURRENT CREDITS
+  // =========================
+
+  const currentCredits =
+    registrations.reduce(
+      (total, registration) => {
+        return (
+          total +
+          (
+            registration.offering
+              ?.courseId
+              ?.credits || 0
+          )
+        );
+      },
+      0
+    );
+
+
+  // =========================
+  // RETAKE COURSES
+  // =========================
+
+  const failedCourses =
+    records.filter(
+      (record) =>
+        record.retakeRequired
+    );
+
+
+  // =========================
+  // GRADUATION PROGRESS
+  // =========================
 
   const graduationTarget = 160;
 
-  const progressPercent = Math.min(
-    100,
-    Math.round(
-      (totalCreditsEarned /
-        graduationTarget) *
-        100
-    )
-  );
+  const progressPercent =
+    Math.min(
+      100,
+      Math.round(
+        (
+          totalCreditsEarned /
+          graduationTarget
+        ) * 100
+      )
+    );
+
 
   return (
     <div className="student-layout">
+
       <Sidebar />
 
       <main className="main">
+
         <Header
           title="Dashboard"
           name={
@@ -114,11 +197,13 @@ function StudentDashboard() {
           role="Student"
         />
 
+
         {loading && (
           <Loading
             message="Loading dashboard..."
           />
         )}
+
 
         {error && (
           <ErrorMessage
@@ -126,10 +211,20 @@ function StudentDashboard() {
           />
         )}
 
+
         {!loading && !error && (
           <>
+
+            {/* =========================
+                STAT CARDS
+            ========================= */}
+
             <div className="cards">
+
+              {/* CURRENT CREDITS */}
+
               <div className="card">
+
                 <div className="card-icon blue">
                   📚
                 </div>
@@ -149,9 +244,14 @@ function StudentDashboard() {
                     registered courses
                   </span>
                 </div>
+
               </div>
 
+
+              {/* CREDITS EARNED */}
+
               <div className="card">
+
                 <div className="card-icon green">
                   ✓
                 </div>
@@ -169,9 +269,14 @@ function StudentDashboard() {
                     of 160 credits
                   </span>
                 </div>
+
               </div>
 
+
+              {/* CURRENT TERM */}
+
               <div className="card">
+
                 <div className="card-icon orange">
                   🎓
                 </div>
@@ -187,36 +292,53 @@ function StudentDashboard() {
 
                   <span>
                     {student?.studentId ||
+                      currentUser?.studentId ||
                       "Student"}
                   </span>
                 </div>
+
               </div>
 
+
+              {/* GPA */}
+
               <div className="card">
+
                 <div className="card-icon purple">
                   📊
                 </div>
 
                 <div>
                   <p>
-                    Progress
+                    GPA
                   </p>
 
                   <h2>
-                    {progressPercent}%
+                    {Number(gpa).toFixed(2)}
                   </h2>
 
                   <span>
-                    toward graduation
+                    Cumulative GPA
                   </span>
                 </div>
+
               </div>
+
             </div>
 
+
+            {/* =========================
+                RETAKE WARNING
+            ========================= */}
+
             {failedCourses.length > 0 && (
+
               <section className="panel retake-panel">
+
                 <div className="panel-header">
+
                   <div>
+
                     <h2>
                       Retake Required
                     </h2>
@@ -225,20 +347,30 @@ function StudentDashboard() {
                       Courses graded F must
                       be retaken.
                     </p>
+
                   </div>
+
                 </div>
+
 
                 {failedCourses.map(
                   (record) => (
+
                     <div
                       className="retake-course"
                       key={record.id}
                     >
+
                       <div>
+
                         <strong>
-                          {record.course?.code}
+                          {record.course?.code ||
+                            "Unknown Course"}
+
                           {" - "}
-                          {record.course?.title}
+
+                          {record.course?.title ||
+                            ""}
                         </strong>
 
                         <p>
@@ -246,21 +378,39 @@ function StudentDashboard() {
                           {" • "}
                           {record.term}
                         </p>
+
                       </div>
+
 
                       <span className="retake-badge">
                         Retake Required
                       </span>
+
                     </div>
+
                   )
                 )}
+
               </section>
+
             )}
 
+
+            {/* =========================
+                CURRENT COURSES
+                + ADD DROP
+            ========================= */}
+
             <div className="content-grid">
+
+              {/* CURRENT COURSES */}
+
               <section className="panel">
+
                 <div className="panel-header">
+
                   <div>
+
                     <h2>
                       Current Courses
                     </h2>
@@ -270,7 +420,9 @@ function StudentDashboard() {
                       {term ||
                         "the current term"}
                     </p>
+
                   </div>
+
 
                   <Link
                     className="outline-btn"
@@ -278,11 +430,16 @@ function StudentDashboard() {
                   >
                     View All
                   </Link>
+
                 </div>
 
+
                 <div className="current-courses">
+
                   {registrations.length === 0 ? (
+
                     <div className="browse-empty">
+
                       <h3>
                         No courses registered
                       </h3>
@@ -292,10 +449,14 @@ function StudentDashboard() {
                         registrations were
                         found.
                       </p>
+
                     </div>
+
                   ) : (
+
                     registrations.map(
                       (registration) => {
+
                         const offering =
                           registration.offering;
 
@@ -310,11 +471,14 @@ function StudentDashboard() {
                         }
 
                         return (
+
                           <div
                             className="course"
                             key={registration.id}
                           >
+
                             <div className="course-code">
+
                               <strong>
                                 {course.code}
                               </strong>
@@ -323,9 +487,12 @@ function StudentDashboard() {
                                 Sec{" "}
                                 {offering.section}
                               </span>
+
                             </div>
 
+
                             <div className="course-info">
+
                               <h3>
                                 {course.title}
                               </h3>
@@ -341,13 +508,18 @@ function StudentDashboard() {
                               <p>
                                 {offering.room ||
                                   "TBA"}
+
                                 {" • "}
+
                                 {offering.instructor ||
                                   "TBA"}
                               </p>
+
                             </div>
 
+
                             <div className="course-credit">
+
                               <strong>
                                 {course.credits}
                               </strong>
@@ -355,18 +527,30 @@ function StudentDashboard() {
                               <small>
                                 Credits
                               </small>
+
                             </div>
+
                           </div>
+
                         );
                       }
                     )
+
                   )}
+
                 </div>
+
               </section>
 
+
+              {/* ADD / DROP */}
+
               <section className="panel">
+
                 <div className="panel-header">
+
                   <div>
+
                     <h2>
                       Add / Drop
                     </h2>
@@ -374,7 +558,9 @@ function StudentDashboard() {
                     <p>
                       Current request status
                     </p>
+
                   </div>
+
 
                   <Link
                     className="outline-btn"
@@ -382,62 +568,105 @@ function StudentDashboard() {
                   >
                     Open Page
                   </Link>
+
                 </div>
+
 
                 <div className="add-drop-list">
-                  {registrations.map(
-                    (registration) => {
-                      const offering =
-                        registration.offering;
 
-                      const course =
-                        offering?.courseId;
+                  {registrations.length === 0 ? (
 
-                      if (
-                        !offering ||
-                        !course
-                      ) {
-                        return null;
-                      }
+                    <div className="browse-empty">
 
-                      return (
-                        <div
-                          className="add-drop-item"
-                          key={registration.id}
-                        >
-                          <div>
-                            <strong>
-                              {course.code}
-                            </strong>
+                      <h3>
+                        No courses
+                      </h3>
 
-                            <p>
-                              Section{" "}
-                              {offering.section}
-                            </p>
+                      <p>
+                        No registered courses
+                        available.
+                      </p>
+
+                    </div>
+
+                  ) : (
+
+                    registrations.map(
+                      (registration) => {
+
+                        const offering =
+                          registration.offering;
+
+                        const course =
+                          offering?.courseId;
+
+                        if (
+                          !offering ||
+                          !course
+                        ) {
+                          return null;
+                        }
+
+                        return (
+
+                          <div
+                            className="add-drop-item"
+                            key={registration.id}
+                          >
+
+                            <div>
+
+                              <strong>
+                                {course.code}
+                              </strong>
+
+                              <p>
+                                Section{" "}
+                                {offering.section}
+                              </p>
+
+                            </div>
+
+
+                            <span
+                              className={
+                                offering.addDropOpen
+                                  ? "status add-drop-open"
+                                  : "status add-drop-closed"
+                              }
+                            >
+
+                              {offering.addDropOpen
+                                ? "Open"
+                                : "Closed"}
+
+                            </span>
+
                           </div>
 
-                          <span
-                            className={
-                              offering.addDropOpen
-                                ? "status add-drop-open"
-                                : "status add-drop-closed"
-                            }
-                          >
-                            {offering.addDropOpen
-                              ? "Open"
-                              : "Closed"}
-                          </span>
-                        </div>
-                      );
-                    }
+                        );
+                      }
+                    )
+
                   )}
+
                 </div>
+
               </section>
+
             </div>
 
+
+            {/* =========================
+                ACADEMIC PROGRESS
+            ========================= */}
+
             <section className="panel progress-panel">
+
               <div className="panel-header">
+
                 <div>
+
                   <h2>
                     Academic Progress
                   </h2>
@@ -446,32 +675,45 @@ function StudentDashboard() {
                     Progress toward
                     graduation requirement
                   </p>
+
                 </div>
 
+
                 <span className="graduation">
+
                   {Math.max(
                     0,
                     graduationTarget -
                       totalCreditsEarned
                   )}
+
                   {" "}
                   credits remaining
+
                 </span>
+
               </div>
 
+
               <div className="progress-container">
+
                 <div className="progress-label">
+
                   <span>
-                    {totalCreditsEarned} credits
-                    earned
+                    {totalCreditsEarned}
+                    {" "}
+                    credits earned
                   </span>
 
                   <strong>
                     {progressPercent}%
                   </strong>
+
                 </div>
 
+
                 <div className="progress-bar">
+
                   <div
                     className="progress-fill"
                     style={{
@@ -479,12 +721,18 @@ function StudentDashboard() {
                         `${progressPercent}%`
                     }}
                   />
+
                 </div>
+
               </div>
+
             </section>
+
           </>
         )}
+
       </main>
+
     </div>
   );
 }
