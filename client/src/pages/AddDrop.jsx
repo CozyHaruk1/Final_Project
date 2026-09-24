@@ -152,212 +152,206 @@ function AddDrop() {
                 </div>
               </div>
 
-              <div className="add-drop-course-list">
-                {registrations.map(
-                  (registration) => {
-                    const offering =
-                      registration.offering;
+<div className="add-drop-course-list">
+  {registrations.map((registration) => {
+    const offering = registration.offering;
+    const course = offering?.courseId;
 
-                    const course =
-                      offering?.courseId;
+    if (!offering || !course) {
+      return null;
+    }
 
-                    if (!offering || !course) {
-                      return null;
-                    }
+    const isOpen = offering.addDropOpen === true;
 
-                    const isOpen =
-                      offering.addDropOpen === true;
+    const closeDate = offering.addDropCloseDate
+      ? new Date(offering.addDropCloseDate).toLocaleDateString()
+      : null;
 
-                    return (
-                      <div
-                        className="add-drop-course-card"
-                        key={registration.id}
-                      >
-                        <div className="add-drop-course-info">
-                          <div>
-                            <span className="course-code-label">
-                              {course.code}
-                            </span>
+    return (
+      <div
+        className="add-drop-course-card"
+        key={registration.id}
+      >
+        <div className="add-drop-course-info">
+          <div>
+            <span className="course-code-label">
+              {course.code}
+            </span>
 
-                            <h3>
-                              {course.title}
-                            </h3>
+            <h3>{course.title}</h3>
 
-                            <p>
-                              Section{" "}
-                              {offering.section}
-                              {" • "}
-                              {offering.day}
-                              {" • "}
-                              {offering.startTime}
-                              {" - "}
-                              {offering.endTime}
-                            </p>
-                          </div>
+            <p>
+              Section {offering.section}
+              {" • "}
+              {offering.day}
+              {" • "}
+              {offering.startTime}
+              {" - "}
+              {offering.endTime}
+            </p>
+          </div>
 
-                          <span
-                            className={
-                              isOpen
-                                ? "status add-drop-open"
-                                : "status add-drop-closed"
-                            }
-                          >
-                            {isOpen
-                              ? "Add/Drop Open"
-                              : "Add/Drop Closed"}
-                          </span>
-                        </div>
+          <div className="add-drop-status-info">
+            <span
+              className={
+                isOpen
+                  ? "status add-drop-open"
+                  : "status add-drop-closed"
+              }
+            >
+              {isOpen
+                ? "Add/Drop Open"
+                : "Add/Drop Closed"}
+            </span>
 
-                        <div className="add-drop-course-action">
-                          {isOpen ? (
-                            <button
-                              type="button"
-                              onClick={() =>
-                                handleRequest(
-                                  registration
-                                )
-                              }
-                            >
-                              Request Add/Drop
-                            </button>
-                          ) : (
-                            <button
-                              type="button"
-                              disabled
-                              className="disabled-request"
-                            >
-                              Requests Closed
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  }
-                )}
-              </div>
-            </section>
+            {isOpen && closeDate && (
+              <small>
+                Closes: {closeDate}
+              </small>
+            )}
+          </div>
+        </div>
+
+        <div className="add-drop-course-action">
+          {isOpen ? (
+            <button
+              type="button"
+              onClick={() => handleRequest(registration)}
+            >
+              Request Add/Drop
+            </button>
+          ) : (
+            <button
+              type="button"
+              disabled
+              className="disabled-request"
+            >
+              Requests Closed
+            </button>
           )}
+        </div>
+      </div>
+    );
+  })}
+</div>
+</section>
+)}
 
-        {selectedRegistration &&
-          selectedOffering &&
-          selectedCourse && (
-            <section className="panel request-content">
-              <div className="panel-header">
-                <div>
-                  <h2>
-                    Add/Drop Request
-                  </h2>
+{selectedRegistration &&
+  selectedOffering &&
+  selectedCourse && (
+    <section className="panel request-content">
+      <div className="panel-header">
+        <div>
+          <h2>Add/Drop Request</h2>
 
-                  <p>
-                    {selectedCourse.code}
-                    {" - "}
-                    {selectedCourse.title}
-                  </p>
-                </div>
+          <p>
+            {selectedCourse.code}
+            {" - "}
+            {selectedCourse.title}
+          </p>
+        </div>
 
-                <button
-                  type="button"
-                  onClick={closeRequest}
-                >
-                  Close
-                </button>
-              </div>
+        <button
+          type="button"
+          onClick={closeRequest}
+        >
+          Close
+        </button>
+      </div>
 
-              <div className="advisor-card">
-                <div>
-                  <span>
-                    Academic Advisor
-                  </span>
+      <div className="advisor-card">
+        <div>
+          <span>
+            Academic Advisor
+          </span>
 
-                  <strong>
-                    {advisor?.name ||
-                      "Advisor not assigned"}
-                  </strong>
-                </div>
+          <strong>
+            {advisor?.name ||
+              "Advisor not assigned"}
+          </strong>
+        </div>
 
-                <div>
-                  <span>
-                    Email
-                  </span>
+        <div>
+          <span>
+            Email
+          </span>
 
-                  <strong>
-                    {advisor?.email ||
-                      "No advisor email available"}
-                  </strong>
-                </div>
-              </div>
+          <strong>
+            {advisor?.email ||
+              "No advisor email available"}
+          </strong>
+        </div>
+      </div>
 
-              <div className="request-steps">
-                <h3>
-                  Request Instructions
-                </h3>
+      <div className="request-steps">
+        <h3>
+          Request Instructions
+        </h3>
 
-                <ol>
-                  <li>
-                    Download and open the
-                    Add/Drop Request form.
-                  </li>
+        <ol>
+          <li>
+            Download and open the Add/Drop Request form.
+          </li>
 
-                  <li>
-                    Fill in your student ID,
-                    name, term, course code and
-                    section.
-                  </li>
+          <li>
+            Fill in your student ID, name, term,
+            course code and section.
+          </li>
 
-                  <li>
-                    State the reason for the
-                    request and sign the form.
-                  </li>
+          <li>
+            State the reason for the request
+            and sign the form.
+          </li>
 
-                  <li>
-                    Email the completed form to
-                    your advisor using the
-                    subject:
-                    <br />
+          <li>
+            Email the completed form to your advisor
+            using the subject:
+            <br />
 
-                    <strong>
-                      {emailSubject}
-                    </strong>
-                  </li>
+            <strong>
+              {emailSubject}
+            </strong>
+          </li>
 
-                  <li>
-                    Your advisor will confirm by
-                    email after the registration
-                    has been updated.
-                  </li>
-                </ol>
-              </div>
+          <li>
+            Your advisor will confirm by email
+            after the registration has been updated.
+          </li>
+        </ol>
+      </div>
 
-              <div className="add-drop-request-actions">
-                <a
-                  className="download-form"
-                  href="/AddDropRequest.pdf"
-                  download
-                >
-                  Download Add/Drop Form
-                </a>
+      <div className="add-drop-request-actions">
+        <a
+          className="download-form"
+          href="/AddDropRequest.pdf"
+          download
+        >
+          Download Add/Drop Form
+        </a>
 
-                {advisor?.email ? (
-                  <a
-                    className="email-advisor-button"
-                    href={mailtoLink}
-                  >
-                    Email Advisor
-                  </a>
-                ) : (
-                  <button
-                    type="button"
-                    disabled
-                    className="disabled-request"
-                  >
-                    Advisor Email Unavailable
-                  </button>
-                )}
-              </div>
-            </section>
-          )}
-      </main>
-    </div>
+        {advisor?.email ? (
+          <a
+            className="email-advisor-button"
+            href={mailtoLink}
+          >
+            Email Advisor
+          </a>
+        ) : (
+          <button
+            type="button"
+            disabled
+            className="disabled-request"
+          >
+            Advisor Email Unavailable
+          </button>
+        )}
+      </div>
+    </section>
+  )}
+
+</main>
+</div>
   );
 }
 

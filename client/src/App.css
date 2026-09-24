@@ -60,17 +60,21 @@ textarea {
 }
 
 .logo-icon {
-  width: 42px;
-  height: 42px;
-
-  background: #2563eb;
-  border-radius: 10px;
+  width: 44px;
+  height: 44px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.logo-icon img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
 }
 
 .logo-text h2 {
@@ -173,20 +177,21 @@ textarea {
 
 .header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
 
   margin-bottom: 30px;
 }
 
 .header-left h1 {
-  font-size: 28px;
   color: #111827;
+  font-size: 28px;
 }
 
 .header-left p {
-  color: #6b7280;
   margin-top: 6px;
+
+  color: #6b7280;
 }
 
 .header-left p span {
@@ -194,10 +199,55 @@ textarea {
   font-weight: 600;
 }
 
+
+/* =========================
+   HEADER RIGHT
+========================= */
+
+.header-right {
+  display: flex;
+  align-items: center;
+
+  gap: 18px;
+}
+
+
+/* =========================
+   NOTIFICATION
+========================= */
+
+.notification {
+  font-size: 20px;
+
+  cursor: default;
+}
+
+
+/* =========================
+   PROFILE
+========================= */
+
+.profile-wrapper {
+  position: relative;
+}
+
 .profile {
   display: flex;
   align-items: center;
+
   gap: 12px;
+
+  padding: 6px 8px;
+
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.profile:hover {
+  background: #f3f4f6;
 }
 
 .profile-info {
@@ -205,32 +255,163 @@ textarea {
   flex-direction: column;
 }
 
-.profile-info small {
-  color: #9ca3af;
-  margin-top: 3px;
+.profile-info strong {
+  color: #111827;
+
+  font-size: 14px;
 }
 
-.notification {
-  font-size: 20px;
-  margin-right: 10px;
+.profile-info small {
+  margin-top: 3px;
+
+  color: #9ca3af;
+
+  font-size: 12px;
 }
+
+
+/* =========================
+   AVATAR
+========================= */
 
 .avatar {
   width: 42px;
   height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
 
   border-radius: 50%;
 
   background: #dbeafe;
   color: #2563eb;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  font-weight: bold;
+  font-weight: 700;
 }
 
+
+/* =========================
+   PROFILE POPUP
+========================= */
+
+.profile-popup {
+  position: absolute;
+
+  top: calc(100% + 10px);
+  right: 0;
+
+  width: 300px;
+
+  padding: 18px;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+
+  box-shadow:
+    0 12px 30px
+    rgba(15, 23, 42, 0.12);
+
+  opacity: 0;
+  visibility: hidden;
+
+  transform: translateY(-6px);
+
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0.2s ease;
+
+  z-index: 200;
+}
+
+.profile-wrapper:hover .profile-popup {
+  opacity: 1;
+  visibility: visible;
+
+  transform: translateY(0);
+}
+
+
+/* =========================
+   PROFILE POPUP HEADER
+========================= */
+
+.profile-popup-top {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+}
+
+.profile-popup-top strong {
+  display: block;
+
+  color: #111827;
+
+  font-size: 14px;
+}
+
+.profile-popup-top p {
+  margin-top: 4px;
+
+  color: #6b7280;
+
+  font-size: 12px;
+}
+
+.profile-popup-avatar {
+  width: 46px;
+  height: 46px;
+}
+
+
+/* =========================
+   PROFILE POPUP DETAILS
+========================= */
+
+.profile-popup-divider {
+  height: 1px;
+
+  margin: 16px 0;
+
+  background: #e5e7eb;
+}
+
+.profile-popup-detail {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  padding: 8px 0;
+}
+
+.profile-popup-detail span {
+  color: #9ca3af;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.profile-popup-detail strong {
+  color: #374151;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  text-align: right;
+
+  overflow-wrap: anywhere;
+}
 
 /* =========================
    STAT CARDS
@@ -797,8 +978,13 @@ textarea {
   }
 
   .sidebar-icon {
-    font-size: 18px;
-  }
+  width: 19px;
+  height: 19px;
+
+  flex-shrink: 0;
+
+  stroke-width: 2;
+}
 
   .logout-button {
     justify-content: center;
@@ -1436,6 +1622,18 @@ textarea {
   line-height: 1.5;
 
   margin: 0;
+}
+
+.add-drop-status-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 7px;
+}
+
+.add-drop-status-info small {
+  color: #6b7280;
+  font-size: 11px;
 }
 
 
