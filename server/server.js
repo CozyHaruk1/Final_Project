@@ -59,6 +59,11 @@ const studentRoutes = loadRouter(
   "./routes/studentRoutes"
 );
 
+const notificationRoutes =
+  loadRouter(
+    "notificationRoutes",
+    "./routes/notificationRoutes"
+  );
 
 // ======================================================
 // APP
@@ -139,6 +144,10 @@ app.use(
   studentRoutes
 );
 
+app.use(
+  "/api",
+  notificationRoutes
+);
 
 // ======================================================
 // 404

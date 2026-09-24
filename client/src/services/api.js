@@ -99,4 +99,22 @@ export const getOfferings =
     );
   };
 
+  export const getMyNotifications =
+  async () => {
+    return apiRequest(
+      "/me/notifications"
+    );
+  };
+
+
+  export const markAllNotificationsRead =
+  async () => {
+    return apiRequest(
+      "/me/notifications/read-all",
+      {
+        method: "PATCH"
+      }
+    );
+  };
+
 export default apiRequest;
