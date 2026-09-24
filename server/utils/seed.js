@@ -9,7 +9,7 @@ const Course = require("../models/Course");
 const Offering = require("../models/Offering");
 const Registration = require("../models/Registration");
 const Record = require("../models/Record");
-
+const Notification = require("../models/Notification");
 
 // ======================================================
 // CLEAR DATABASE
@@ -18,6 +18,7 @@ const Record = require("../models/Record");
 const clearDatabase = async () => {
   console.log("Clearing old seed data...");
 
+  await Notification.deleteMany({});
   await Registration.deleteMany({});
   await Record.deleteMany({});
   await Offering.deleteMany({});
@@ -604,7 +605,7 @@ const seedOfferings = async (courses) => {
     [
       "ITE442",
       "A",
-      "Dr. Ather",
+      "Dr. Aether",
       "Wednesday",
       "13:00",
       "15:00",

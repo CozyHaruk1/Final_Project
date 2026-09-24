@@ -5,6 +5,7 @@ const Course = require("../models/Course");
 const Offering = require("../models/Offering");
 const Registration = require("../models/Registration");
 const Record = require("../models/Record");
+const Notification = require("../models/Notification");
 
 const PASSING_GRADES = [
   "A",
@@ -79,6 +80,32 @@ const getCurrentRegistrations = async (
   });
 };
 
+const createStudentNotification =
+  async (
+    userId,
+    type,
+    message
+  ) => {
+    try {
+      await Notification.create({
+        userId,
+        type,
+        message,
+        read: false,
+      });
+    } catch (error) {
+      /*
+        Notification failure should
+        never cancel a successful
+        registration change.
+      */
+
+      console.error(
+        "Notification creation error:",
+        error
+      );
+    }
+  };
 
 // ======================================================
 // STUDENT RECORD
@@ -793,9 +820,13 @@ const registerStudent = async (req, res) => {
     // ==================================================
 
     offering.seatsTaken += 1;
-
     await offering.save();
 
+    await createStudentNotification(
+    student._id,
+     "course_registered",
+    `${course.code} - ${course.title} was added to your schedule.`
+    );
 
     await registration.populate({
       path: "offeringId",
@@ -865,9 +896,12 @@ const removeRegistration = async (
     await registration.save();
 
     const offering =
-      await Offering.findById(
-        registration.offeringId
-      );
+    await Offering.findById(
+      registration.offeringId
+      ).populate(
+      "courseId",
+      "code title"
+    );
 
     if (
       offering &&
@@ -877,6 +911,16 @@ const removeRegistration = async (
 
       await offering.save();
     }
+
+    if (offering?.courseId) {
+      await createStudentNotification(
+    registration.studentId,
+
+    "course_dropped",
+
+    `${offering.courseId.code} - ${offering.courseId.title} was removed from your schedule.`
+  );
+}
 
     return res.status(200).json({
       message:

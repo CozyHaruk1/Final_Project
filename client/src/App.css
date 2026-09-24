@@ -213,13 +213,250 @@ textarea {
 
 
 /* =========================
-   NOTIFICATION
+   NOTIFICATIONS
 ========================= */
 
-.notification {
-  font-size: 20px;
+.notification-wrapper {
+  position: relative;
+}
 
-  cursor: default;
+.notification-button {
+  position: relative;
+
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: transparent;
+  color: #374151;
+
+  border: none;
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.notification-button:hover {
+  background: #f3f4f6;
+
+  color: #2563eb;
+}
+
+
+/* =========================
+   NOTIFICATION BADGE
+========================= */
+
+.notification-badge {
+  position: absolute;
+
+  top: 2px;
+  right: 2px;
+
+  min-width: 17px;
+  height: 17px;
+
+  padding: 0 4px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #dc2626;
+  color: #ffffff;
+
+  border: 2px solid #f5f7fb;
+  border-radius: 20px;
+
+  font-size: 9px;
+  font-weight: 700;
+}
+
+
+/* =========================
+   NOTIFICATION POPUP
+========================= */
+
+.notification-popup {
+  position: absolute;
+
+  top: calc(100% + 10px);
+  right: 0;
+
+  width: 360px;
+  max-height: 430px;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+
+  box-shadow:
+    0 12px 30px
+    rgba(15, 23, 42, 0.12);
+
+  overflow: hidden;
+
+  z-index: 300;
+}
+
+
+/* =========================
+   NOTIFICATION HEADER
+========================= */
+
+.notification-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  padding: 16px 18px;
+
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.notification-popup-header h3 {
+  color: #111827;
+
+  font-size: 15px;
+}
+
+.notification-popup-header p {
+  margin-top: 3px;
+
+  color: #9ca3af;
+
+  font-size: 11px;
+}
+
+.mark-read-button {
+  display: flex;
+  align-items: center;
+
+  gap: 5px;
+
+  background: transparent;
+  color: #2563eb;
+
+  border: none;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+
+/* =========================
+   NOTIFICATION LIST
+========================= */
+
+.notification-list {
+  max-height: 350px;
+
+  overflow-y: auto;
+}
+
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 12px;
+
+  padding: 15px 18px;
+
+  border-bottom: 1px solid #f3f4f6;
+
+  background: #ffffff;
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.notification-item.unread {
+  background: #eff6ff;
+}
+
+.notification-item-icon {
+  width: 32px;
+  height: 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  background: #dbeafe;
+  color: #2563eb;
+
+  border-radius: 50%;
+
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.notification-item-content {
+  min-width: 0;
+
+  flex: 1;
+}
+
+.notification-item-content strong {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #111827;
+
+  font-size: 12px;
+}
+
+.notification-item-content p {
+  color: #4b5563;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.notification-item-content span {
+  display: block;
+
+  margin-top: 6px;
+
+  color: #9ca3af;
+
+  font-size: 10px;
+}
+
+
+/* =========================
+   EMPTY NOTIFICATIONS
+========================= */
+
+.notification-empty {
+  min-height: 140px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  color: #9ca3af;
+}
+
+.notification-empty p {
+  font-size: 12px;
 }
 
 
@@ -1008,10 +1245,15 @@ textarea {
     align-items: flex-start;
   }
 
-  .profile-info,
-  .notification {
-    display: none;
-  }
+  .profile-info {
+  display: none;
+}
+
+.notification-popup {
+  width: 300px;
+
+  right: -55px;
+}
 
   .course {
     flex-wrap: wrap;
