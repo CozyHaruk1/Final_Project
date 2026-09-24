@@ -437,6 +437,15 @@ textarea {
   font-size: 10px;
 }
 
+.notification-item-icon.registered {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.notification-item-icon.dropped {
+  background: #fee2e2;
+  color: #b91c1c;
+}
 
 /* =========================
    EMPTY NOTIFICATIONS

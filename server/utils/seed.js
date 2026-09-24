@@ -1819,13 +1819,58 @@ const seed = async () => {
 
 
     await seedRegistrations(
-      students,
-      courses,
-      offerings
-    );
+  students,
+  courses,
+  offerings
+);
 
 
-    await verifySeed();
+// ======================================================
+// DEMO NOTIFICATION FOR STU001
+// ======================================================
+
+console.log(
+  "Creating notifications..."
+);
+
+const demoRegistration =
+  await Registration.findOne({
+    studentId: students[0]._id,
+    status: "registered",
+  }).populate({
+    path: "offeringId",
+    populate: {
+      path: "courseId",
+      select: "code title",
+    },
+  });
+
+if (
+  demoRegistration &&
+  demoRegistration.offeringId &&
+  demoRegistration.offeringId.courseId
+) {
+  const demoCourse =
+    demoRegistration.offeringId.courseId;
+
+  await Notification.create({
+    userId: students[0]._id,
+
+    type: "course_registered",
+
+    message:
+      `${demoCourse.code} - ${demoCourse.title} was added to your schedule.`,
+
+    read: false,
+  });
+
+  console.log(
+    "1 notification created for STU001"
+  );
+}
+
+
+await verifySeed();
 
 
     console.log("");

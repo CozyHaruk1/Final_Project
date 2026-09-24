@@ -6,7 +6,9 @@ import {
 
 import {
   Bell,
-  CheckCheck
+  CheckCheck,
+  Check,
+  X
 } from "lucide-react";
 
 import {
@@ -318,13 +320,18 @@ function Header({
                           }
                         >
 
-                          <div className="notification-item-icon">
-
-                            {notification.type ===
-                            "course_registered"
-                              ? "+"
-                              : "−"}
-
+                        <div
+                          className={`notification-item-icon ${
+                            notification.type === "course_registered"
+                              ? "registered"
+                              : "dropped"
+                            }`}
+>
+                            {notification.type === "course_registered" ? (
+                              <Check size={16} />
+                            ) : (
+                              <X size={16} />
+                            )}
                           </div>
 
 
