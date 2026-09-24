@@ -7,6 +7,7 @@ import AcademicRecord from "./pages/AcademicRecord";
 import AddDrop from "./pages/AddDrop";
 import BrowseCourses from "./pages/BrowseCourses";
 import ProtectedRoute from "./components/ProtectedRoute";
+import UserManagement from "./pages/UserManagement";
 
 import "./App.css";
 
@@ -93,7 +94,14 @@ function App() {
           </ProtectedRoute>
         }
       />
-
+      <Route
+        path="/admin/users"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <UserManagement />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/advisor"
         element={
