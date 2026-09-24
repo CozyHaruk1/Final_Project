@@ -92,14 +92,14 @@ const seedUsers = async () => {
     "Tony Stark", //Student9
     "Sephiroth", //Student10
     "Lily Hosein", //Student11
-    "Wu Shin Yao", //Student12
+    "Min Aung Win", //Student12
     "Zhu Bajie", //Student13
     "Mono Von Bismarck", //Student14
     "Kanji Noda", //Student15
     "Eichiro Oda", //Student16
     "Sugita Tomokazu", //Student17
     "Nouto Mamiko", //Student18
-    "Hatsume Miku", //Student19
+    "Hatsune Miku", //Student19
     "Shiranui Mai", //Student20
     "Makima", //Student21
     "Tanjiro Kamado", //Student22
