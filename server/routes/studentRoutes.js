@@ -1,11 +1,16 @@
 const express = require("express");
 
+// Existing registration controller
 const {
   getStudentRecord,
   getEligibleCourses,
   getMyRegistrations,
-  getMyRecord,
 } = require("../controllers/registrationController");
+
+// New student controller with GPA
+const {
+  getMyRecord,
+} = require("../controllers/studentController");
 
 const protect = require("../middleware/authMiddleware");
 const authorize = require("../middleware/roleMiddleware");

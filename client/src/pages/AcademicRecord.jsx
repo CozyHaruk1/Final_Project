@@ -10,13 +10,27 @@ import {
   getMyRecord
 } from "../services/api";
 
+const PASSING_GRADES = [
+  "A",
+  "B+",
+  "B",
+  "C+",
+  "C",
+  "D+",
+  "D"
+];
+
 function AcademicRecord() {
   const currentUser = getCurrentUser();
 
   const [student, setStudent] = useState(null);
   const [records, setRecords] = useState([]);
   const [groupedByTerm, setGroupedByTerm] = useState({});
+
+  const [gpa, setGpa] = useState(0);
   const [totalCreditsEarned, setTotalCreditsEarned] = useState(0);
+  const [passedCoursesCount, setPassedCoursesCount] = useState(0);
+  const [failedCoursesCount, setFailedCoursesCount] = useState(0);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -31,17 +45,60 @@ function AcademicRecord() {
 
         setStudent(data.student || null);
 
-        setRecords(
-          data.records || []
-        );
+        const normalizedRecords =
+          (data.records || []).map((record) => ({
+            id: record._id || record.id,
 
-        setGroupedByTerm(
-          data.groupedByTerm || {}
+            term: record.term,
+
+            course:
+              record.courseId ||
+              record.course,
+
+            grade: record.grade,
+
+            passed:
+              PASSING_GRADES.includes(
+                record.grade
+              ),
+
+            retakeRequired:
+              record.retakeRequired === true
+          }));
+
+        setRecords(normalizedRecords);
+
+        const groups = {};
+
+        normalizedRecords.forEach((record) => {
+          if (!groups[record.term]) {
+            groups[record.term] = [];
+          }
+
+          groups[record.term].push(record);
+        });
+
+        setGroupedByTerm(groups);
+
+        const summary =
+          data.academicSummary || {};
+
+        setGpa(
+          summary.gpa ?? 0
         );
 
         setTotalCreditsEarned(
-          data.totalCreditsEarned || 0
+          summary.totalCredits ?? 0
         );
+
+        setPassedCoursesCount(
+          summary.passedCourses ?? 0
+        );
+
+        setFailedCoursesCount(
+          summary.failedCourses ?? 0
+        );
+
       } catch (err) {
         setError(
           err.message ||
@@ -55,23 +112,21 @@ function AcademicRecord() {
     loadRecord();
   }, []);
 
-  const passedCourses = records.filter(
-    (record) => record.passed
-  );
-
   const failedCourses = records.filter(
     (record) => record.retakeRequired
   );
 
-  const termEntries = Object.entries(
-    groupedByTerm
-  ).reverse();
+  const termEntries =
+    Object.entries(
+      groupedByTerm
+    ).reverse();
 
   return (
     <div className="student-layout">
       <Sidebar />
 
       <main className="main">
+
         <Header
           title="Academic Record"
           name={
@@ -96,10 +151,31 @@ function AcademicRecord() {
 
         {!loading && !error && (
           <>
+
             <div className="cards">
+
               <div className="card">
                 <div className="card-icon blue">
                   🎓
+                </div>
+
+                <div>
+                  <p>GPA</p>
+
+                  <h2>
+                    {gpa.toFixed(2)}
+                  </h2>
+
+                  <span>
+                    Cumulative GPA
+                  </span>
+                </div>
+              </div>
+
+
+              <div className="card">
+                <div className="card-icon green">
+                  ✓
                 </div>
 
                 <div>
@@ -117,25 +193,6 @@ function AcademicRecord() {
                 </div>
               </div>
 
-              <div className="card">
-                <div className="card-icon green">
-                  ✓
-                </div>
-
-                <div>
-                  <p>
-                    Courses Passed
-                  </p>
-
-                  <h2>
-                    {passedCourses.length}
-                  </h2>
-
-                  <span>
-                    completed courses
-                  </span>
-                </div>
-              </div>
 
               <div className="card">
                 <div className="card-icon orange">
@@ -144,18 +201,19 @@ function AcademicRecord() {
 
                 <div>
                   <p>
-                    Total Records
+                    Courses Passed
                   </p>
 
                   <h2>
-                    {records.length}
+                    {passedCoursesCount}
                   </h2>
 
                   <span>
-                    academic history
+                    completed courses
                   </span>
                 </div>
               </div>
+
 
               <div className="card">
                 <div className="card-icon purple">
@@ -168,18 +226,21 @@ function AcademicRecord() {
                   </p>
 
                   <h2>
-                    {failedCourses.length}
+                    {failedCoursesCount}
                   </h2>
 
                   <span>
-                    courses graded F
+                    unresolved failed courses
                   </span>
                 </div>
               </div>
+
             </div>
+
 
             {failedCourses.length > 0 && (
               <section className="panel retake-panel">
+
                 <div className="panel-header">
                   <div>
                     <h2>
@@ -187,8 +248,8 @@ function AcademicRecord() {
                     </h2>
 
                     <p>
-                      Courses with a grade of F
-                      must be retaken.
+                      Courses graded F must
+                      be retaken.
                     </p>
                   </div>
                 </div>
@@ -219,10 +280,13 @@ function AcademicRecord() {
                     </div>
                   )
                 )}
+
               </section>
             )}
 
+
             <section className="panel">
+
               <div className="panel-header">
                 <div>
                   <h2>
@@ -242,7 +306,9 @@ function AcademicRecord() {
                 )}
               </div>
 
+
               {termEntries.length === 0 ? (
+
                 <div className="browse-empty">
                   <h3>
                     No academic records
@@ -253,15 +319,19 @@ function AcademicRecord() {
                     were found.
                   </p>
                 </div>
+
               ) : (
+
                 <div className="record-terms">
 
                   {termEntries.map(
                     ([term, termRecords]) => (
+
                       <div
                         className="record-term"
                         key={term}
                       >
+
                         <h3>
                           Term {term}
                         </h3>
@@ -269,6 +339,7 @@ function AcademicRecord() {
                         <div className="record-table">
 
                           <div className="record-row record-heading">
+
                             <span>
                               Course
                             </span>
@@ -288,36 +359,36 @@ function AcademicRecord() {
                             <span>
                               Status
                             </span>
+
                           </div>
+
 
                           {termRecords.map(
                             (record) => (
+
                               <div
                                 className="record-row"
                                 key={record.id}
                               >
+
                                 <strong>
-                                  {record.course
-                                    ?.code ||
+                                  {record.course?.code ||
                                     "N/A"}
                                 </strong>
 
                                 <span>
-                                  {record.course
-                                    ?.title ||
+                                  {record.course?.title ||
                                     "Unknown Course"}
                                 </span>
 
                                 <span>
-                                  {record.course
-                                    ?.credits ||
+                                  {record.course?.credits ||
                                     0}
                                 </span>
 
                                 <strong
                                   className={
-                                    record.grade ===
-                                    "F"
+                                    record.grade === "F"
                                       ? "grade-fail"
                                       : ""
                                   }
@@ -326,30 +397,36 @@ function AcademicRecord() {
                                 </strong>
 
                                 <span>
-                                  {record.retakeRequired
-                                    ? (
-                                      <span className="retake-badge">
-                                        Retake Required
-                                      </span>
-                                    )
-                                    : record.passed
-                                      ? "Passed"
-                                      : "Not completed"}
+                                  {record.retakeRequired ? (
+                                    <span className="retake-badge">
+                                      Retake Required
+                                    </span>
+                                  ) : record.passed ? (
+                                    "Passed"
+                                  ) : (
+                                    "Not completed"
+                                  )}
                                 </span>
+
                               </div>
+
                             )
                           )}
 
                         </div>
                       </div>
+
                     )
                   )}
 
                 </div>
               )}
+
             </section>
+
           </>
         )}
+
       </main>
     </div>
   );
