@@ -5,6 +5,7 @@ import apiRequest, { getCurrentUser } from "../services/api";
 import Header from "../components/Header";
 import Loading from "../components/Loading";
 import ErrorMessage from "../components/ErrorMessage";
+import AdminSidebar from "../components/admin/AdminSidebar";
 import UserTable from "../components/admin/UserTable";
 
 function UserManagement() {
@@ -33,8 +34,7 @@ function UserManagement() {
     loadUsers();
   }, []);
 
-  // search by name, email or student ID + filter by role
-  const text = search.trim().toLowerCase();
+const text = search.trim().toLowerCase();
 
   const shownUsers = users.filter((user) => {
     const roleOk = roleFilter === "all" || user.role === roleFilter;
@@ -68,8 +68,8 @@ function UserManagement() {
       await apiRequest(`/users/${user._id}`, { method: "DELETE" });
       setMessage(`${user.name} was deleted.`);
       loadUsers();
-    } catch (err) {
-      // for example: "Cannot delete the last active admin."
+    } 
+    catch (err) {
       setError(err.message);
     }
   };
@@ -95,49 +95,61 @@ function UserManagement() {
   };
 
   return (
-    <div>
-      <Header
-        title="User Management"
-        name={currentUser ? currentUser.name : "Admin"}
-        role="Administrator"
-      />
+    <div className="student-layout">
 
-      <button onClick={() => navigate("/admin")}>Back to dashboard</button>
-      <button onClick={() => navigate("/admin/users/new")}>Create user</button>
+      <AdminSidebar />
 
-      <p>
-        <input
-          type="text"
-          placeholder="Search by name, email or student ID"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+      <main className="main">
+
+        <Header
+          title="User Management"
+          name={currentUser ? currentUser.name : "Admin"}
+          role="Administrator"
         />
 
-        <select
-          value={roleFilter}
-          onChange={(e) => setRoleFilter(e.target.value)}
-        >
-          <option value="all">All</option>
-          <option value="student">Student</option>
-          <option value="advisor">Advisor</option>
-          <option value="admin">Admin</option>
-        </select>
-      </p>
+        <div className="admin-content">
 
-      {message && <p>{message}</p>}
-      {error && <ErrorMessage message={error} />}
+          <button onClick={() => navigate("/admin/users/new")}>
+            Create user
+          </button>
 
-      {loading ? (
-        <Loading message="Loading users..." />
-      ) : (
-        <UserTable
-          users={shownUsers}
-          currentUserId={currentUser ? currentUser.id : null}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onReactivate={handleReactivate}
-        />
-      )}
+          <p>
+            <input
+              type="text"
+              placeholder="Search by name, email or student ID"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+
+            <select
+              value={roleFilter}
+              onChange={(e) => setRoleFilter(e.target.value)}
+            >
+              <option value="all">All</option>
+              <option value="student">Student</option>
+              <option value="advisor">Advisor</option>
+              <option value="admin">Admin</option>
+            </select>
+          </p>
+
+          {message && <p>{message}</p>}
+          {error && <ErrorMessage message={error} />}
+
+          {loading ? (
+            <Loading message="Loading users..." />
+          ) : (
+            <UserTable
+              users={shownUsers}
+              currentUserId={currentUser ? currentUser.id : null}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onReactivate={handleReactivate}
+            />
+          )}
+
+        </div>
+
+      </main>
     </div>
   );
 }
