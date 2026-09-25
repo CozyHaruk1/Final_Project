@@ -8,6 +8,8 @@ import AddDrop from "./pages/AddDrop";
 import BrowseCourses from "./pages/BrowseCourses";
 import ProtectedRoute from "./components/ProtectedRoute";
 import UserManagement from "./pages/UserManagement";
+import CreateUser from "./pages/CreateUser";
+import EditUser from "./pages/EditUser";
 
 import "./App.css";
 
@@ -99,6 +101,22 @@ function App() {
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
             <UserManagement />
+          </ProtectedRoute>
+        }
+      />
+            <Route
+        path="/admin/users/new"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <CreateUser />
+          </ProtectedRoute>
+        }
+      />
+            <Route
+        path="/admin/users/:id/edit"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <EditUser />
           </ProtectedRoute>
         }
       />
