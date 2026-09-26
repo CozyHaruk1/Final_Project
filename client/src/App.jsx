@@ -11,6 +11,7 @@ import UserManagement from "./pages/UserManagement";
 import CreateUser from "./pages/CreateUser";
 import EditUser from "./pages/EditUser";
 import AdminDashboard from "./pages/AdminDashboard";
+import ManageOfferings from "./pages/ManageOfferings";
 
 import "./App.css";
 
@@ -129,7 +130,14 @@ function App() {
           </ProtectedRoute>
         }
       />
-
+               <Route
+        path="/advisor/offerings"
+        element={
+          <ProtectedRoute allowedRoles={["advisor"]}>
+            <ManageOfferings />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/"
         element={
