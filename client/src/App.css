@@ -2564,3 +2564,164 @@ textarea {
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================
+   ADMIN PAGE (Front-end A)
+============================ */
+
+.admin-content {
+  padding: 8px 0;
+}
+
+.admin-content > button {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+
+.admin-content > button:hover {
+  background: #1d4ed8;
+}
+
+.admin-content > p {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.admin-content input[type="text"],
+.admin-content input[type="email"],
+.admin-content input[type="password"],
+.admin-content select {
+  padding: 8px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.admin-content input[type="text"] {
+  flex: 1;
+  max-width: 320px;
+}
+
+.admin-content table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.admin-content th,
+.admin-content td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 14px;
+}
+
+.admin-content th {
+  background: #f3f4f6;
+  font-weight: 600;
+  color: #374151;
+}
+
+.admin-content tbody tr:hover {
+  background: #f9fafb;
+}
+
+.admin-content td button {
+  padding: 5px 12px;
+  margin-right: 6px;
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
+  background: #ffffff;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.admin-content td button:hover:not(:disabled) {
+  background: #f3f4f6;
+}
+
+.admin-content td button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+
+.admin-content form {
+  max-width: 480px;
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.admin-content .form-group {
+  margin-bottom: 16px;
+}
+
+.admin-content .form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #374151;
+}
+
+.admin-content .form-group input,
+.admin-content .form-group select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.admin-content form button[type="submit"] {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.admin-content form button[type="submit"]:hover {
+  background: #1d4ed8;
+}
+
+.admin-content form button[type="button"] {
+  padding: 10px 20px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.admin-quick-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.admin-quick-actions button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.admin-quick-actions button:hover {
+  background: #1d4ed8;
+}

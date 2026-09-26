@@ -7,6 +7,10 @@ import AcademicRecord from "./pages/AcademicRecord";
 import AddDrop from "./pages/AddDrop";
 import BrowseCourses from "./pages/BrowseCourses";
 import ProtectedRoute from "./components/ProtectedRoute";
+import UserManagement from "./pages/UserManagement";
+import CreateUser from "./pages/CreateUser";
+import EditUser from "./pages/EditUser";
+import AdminDashboard from "./pages/AdminDashboard";
 
 import "./App.css";
 
@@ -85,15 +89,38 @@ function App() {
         }
       /> 
 
-      <Route
+            <Route
         path="/admin"
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
-            <AdminPlaceholder />
+            <AdminDashboard />
           </ProtectedRoute>
         }
       />
-
+      <Route
+        path="/admin/users"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <UserManagement />
+          </ProtectedRoute>
+        }
+      />
+            <Route
+        path="/admin/users/new"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <CreateUser />
+          </ProtectedRoute>
+        }
+      />
+            <Route
+        path="/admin/users/:id/edit"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <EditUser />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/advisor"
         element={
