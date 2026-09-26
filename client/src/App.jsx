@@ -12,6 +12,7 @@ import CreateUser from "./pages/CreateUser";
 import EditUser from "./pages/EditUser";
 import AdminDashboard from "./pages/AdminDashboard";
 import ManageOfferings from "./pages/ManageOfferings";
+import AdvisorDashboard from "./pages/AdvisorDashboard";
 
 import "./App.css";
 
@@ -122,11 +123,11 @@ function App() {
           </ProtectedRoute>
         }
       />
-      <Route
+            <Route
         path="/advisor"
         element={
           <ProtectedRoute allowedRoles={["advisor"]}>
-            <AdvisorPlaceholder />
+            <AdvisorDashboard />
           </ProtectedRoute>
         }
       />
