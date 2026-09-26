@@ -2655,7 +2655,6 @@ textarea {
   cursor: not-allowed;
 }
 
-/* Create/Edit form */
 
 .admin-content form {
   max-width: 480px;
@@ -2705,4 +2704,24 @@ textarea {
   background: #ffffff;
   font-size: 14px;
   cursor: pointer;
+}
+
+.admin-quick-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.admin-quick-actions button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.admin-quick-actions button:hover {
+  background: #1d4ed8;
 }

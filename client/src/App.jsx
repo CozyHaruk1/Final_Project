@@ -10,6 +10,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import UserManagement from "./pages/UserManagement";
 import CreateUser from "./pages/CreateUser";
 import EditUser from "./pages/EditUser";
+import AdminDashboard from "./pages/AdminDashboard";
 
 import "./App.css";
 
@@ -88,11 +89,11 @@ function App() {
         }
       /> 
 
-      <Route
+            <Route
         path="/admin"
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
-            <AdminPlaceholder />
+            <AdminDashboard />
           </ProtectedRoute>
         }
       />
