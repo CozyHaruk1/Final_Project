@@ -13,6 +13,7 @@ import EditUser from "./pages/EditUser";
 import AdminDashboard from "./pages/AdminDashboard";
 import ManageOfferings from "./pages/ManageOfferings";
 import StudentRegistration from "./pages/StudentRegistration";
+import AddDropManagement from "./pages/AddDropManagement";
 import AdvisorDashboard from "./pages/AdvisorDashboard";
 
 import "./App.css";
@@ -145,6 +146,14 @@ function App() {
         element={
           <ProtectedRoute allowedRoles={["advisor"]}>
             <StudentRegistration />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/advisor/add-drop"
+        element={
+          <ProtectedRoute allowedRoles={["advisor"]}>
+            <AddDropManagement />
           </ProtectedRoute>
         }
       />
