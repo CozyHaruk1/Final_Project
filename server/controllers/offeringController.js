@@ -1,6 +1,7 @@
 const Offering = require("../models/Offering");
 const Course = require("../models/Course");
 const Registration = require("../models/Registration");
+const { notifyAddDropChange } = require("./addDropNotify");
 
 
 // ======================================================
@@ -227,6 +228,8 @@ const updateOffering = async (req, res) => {
       });
     }
 
+    const previousAddDropOpen = offering.addDropOpen;
+
     const allowedFields = [
       "section",
       "instructor",
@@ -279,6 +282,8 @@ const updateOffering = async (req, res) => {
       "courseId",
       "code title credits description prerequisites"
     );
+
+    await notifyAddDropChange(offering, previousAddDropOpen);
 
     return res.status(200).json({
       message: "Offering updated successfully.",
