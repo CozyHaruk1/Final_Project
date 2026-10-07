@@ -12,6 +12,7 @@ import CreateUser from "./pages/CreateUser";
 import EditUser from "./pages/EditUser";
 import AdminDashboard from "./pages/AdminDashboard";
 import ManageOfferings from "./pages/ManageOfferings";
+import StudentRegistration from "./pages/StudentRegistration";
 import AdvisorDashboard from "./pages/AdvisorDashboard";
 
 import "./App.css";
@@ -136,6 +137,14 @@ function App() {
         element={
           <ProtectedRoute allowedRoles={["advisor"]}>
             <ManageOfferings />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/advisor/registration"
+        element={
+          <ProtectedRoute allowedRoles={["advisor"]}>
+            <StudentRegistration />
           </ProtectedRoute>
         }
       />
