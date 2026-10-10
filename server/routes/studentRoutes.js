@@ -1,12 +1,16 @@
 const express = require("express");
 
-// Student controller: record, eligible, GPA, my-record
+// Student controller: advisor record/eligibility + student academic record
 const {
   getStudentRecord,
   getEligibleCourses,
   getMyRecord,
-  getMyRegistrations,
 } = require("../controllers/studentController");
+
+// Use the original registration controller for Student current registrations
+const {
+  getMyRegistrations,
+} = require("../controllers/registrationController");
 
 // Search + advisor registrations list controller
 const {
