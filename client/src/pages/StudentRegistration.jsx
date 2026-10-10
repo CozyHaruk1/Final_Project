@@ -51,7 +51,20 @@ function StudentRegistration() {
     setStudent(selected);
     setSelectedCourse(null);
     setSelectedSection(null);
+    setMessage("");
+    setError("");
     loadStudentData(selected._id);
+  };
+
+  const handleBackToSearch = () => {
+    setStudent(null);
+    setRecord(null);
+    setEligible(null);
+    setRegistrations([]);
+    setSelectedCourse(null);
+    setSelectedSection(null);
+    setMessage("");
+    setError("");
   };
 
   const handleSelectSection = (course, section) => {
@@ -133,16 +146,22 @@ function StudentRegistration() {
         />
 
         <div className="admin-content">
-          <StudentSearch onSelect={handleSelectStudent} />
+          {!student && <StudentSearch onSelect={handleSelectStudent} />}
 
-          {message && <p className="success-message">{message}</p>}
-          {error && <ErrorMessage message={error} />}
+          {!student && error && <ErrorMessage message={error} />}
 
-          {loading && <Loading message="Loading student data..." />}
+          {student && (
+            <div className="student-record">
+              <button onClick={handleBackToSearch}>&larr; Back to search</button>
 
-          {student && !loading && (
-            <>
-              <h3>
+              {message && <p className="success-message">{message}</p>}
+              {error && <ErrorMessage message={error} />}
+
+              {loading && <Loading message="Loading student data..." />}
+
+              {!loading && (
+                <>
+                  <h3>
                 {student.name} ({student.studentId})
               </h3>
 
@@ -229,8 +248,10 @@ function StudentRegistration() {
                     </div>
                   </div>
                 </div>
+                  )}
+                </>
               )}
-            </>
+            </div>
           )}
         </div>
       </main>
