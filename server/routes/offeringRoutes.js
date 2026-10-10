@@ -6,6 +6,7 @@ const {
   createOffering,
   updateOffering,
   deleteOffering,
+  getOfferingRoster,
 } = require("../controllers/offeringController");
 
 const protect = require("../middleware/authMiddleware");
@@ -25,6 +26,12 @@ router.get(
   "/:id",
   authorize("student", "advisor"),
   getOfferingById
+);
+
+router.get(
+  "/:id/registrations",
+  authorize("advisor"),
+  getOfferingRoster
 );
 
 router.post(
