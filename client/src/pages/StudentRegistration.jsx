@@ -69,14 +69,6 @@ function StudentRegistration() {
       return;
     }
 
-    const sure = window.confirm(
-      `Register ${student.name} into ${selectedCourse.code} Section ${selectedSection.section}?`
-    );
-
-    if (!sure) {
-      return;
-    }
-
     setError("");
     setMessage("");
 
@@ -231,8 +223,10 @@ function StudentRegistration() {
                       {selectedSection.day} {selectedSection.startTime}-
                       {selectedSection.endTime})?
                     </p>
-                    <button onClick={handleConfirmRegister}>Confirm</button>
-                    <button onClick={handleCancelSelection}>Cancel</button>
+                    <div className="modal-actions">
+                      <button className="btn-primary" onClick={handleConfirmRegister}>Confirm</button>
+                      <button className="btn-secondary" onClick={handleCancelSelection}>Cancel</button>
+                    </div>
                   </div>
                 </div>
               )}

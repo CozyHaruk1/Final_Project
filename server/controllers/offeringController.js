@@ -1,6 +1,7 @@
 const Offering = require("../models/Offering");
 const Course = require("../models/Course");
 const Registration = require("../models/Registration");
+const User = require("../models/User");
 const { notifyAddDropChange } = require("./addDropNotify");
 
 
@@ -345,10 +346,75 @@ const deleteOffering = async (req, res) => {
 };
 
 
+// ======================================================
+// GET OFFERING ROSTER
+// GET /api/offerings/:id/registrations
+// Advisor only — students currently registered in this offering
+// ======================================================
+
+const getOfferingRoster = async (req, res) => {
+  try {
+    const offering = await Offering.findById(req.params.id).populate(
+      "courseId",
+      "code title credits"
+    );
+
+    if (!offering) {
+      return res.status(404).json({
+        message: "Offering not found.",
+      });
+    }
+
+    const registrations = await Registration.find({
+      offeringId: offering._id,
+      status: "registered",
+    }).sort({ createdAt: 1 });
+
+    const studentIds = registrations.map((r) => r.studentId);
+
+    const students = await User.find({
+      _id: { $in: studentIds },
+    }).select("name email studentId");
+
+    const studentMap = new Map(
+      students.map((s) => [s._id.toString(), s])
+    );
+
+    const roster = registrations.map((r) => {
+      const student = studentMap.get(r.studentId.toString());
+      return {
+        registrationId: r._id,
+        studentId: student ? student._id : r.studentId,
+        studentName: student ? student.name : "Unknown student",
+        studentCode: student ? student.studentId : "",
+        studentEmail: student ? student.email : "",
+        status: r.status,
+      };
+    });
+
+    return res.status(200).json({
+      offering: {
+        _id: offering._id,
+        courseId: offering.courseId,
+        section: offering.section,
+        term: offering.term,
+      },
+      roster,
+    });
+  } catch (error) {
+    console.error("Get offering roster error:", error);
+    return res.status(400).json({
+      message: "Could not retrieve offering roster.",
+    });
+  }
+};
+
+
 module.exports = {
   getOfferings,
   getOfferingById,
   createOffering,
   updateOffering,
   deleteOffering,
+  getOfferingRoster,
 };

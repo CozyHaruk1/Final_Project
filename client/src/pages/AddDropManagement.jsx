@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import apiRequest, { getCurrentUser } from "../services/api";
 import Header from "../components/Header";
@@ -6,37 +6,34 @@ import Loading from "../components/Loading";
 import ErrorMessage from "../components/ErrorMessage";
 import AdvisorSidebar from "../components/advisor/AdvisorSidebar";
 import StudentSearch from "../components/advisor/StudentSearch";
-import EligibleCourseList from "../components/advisor/EligibleCourseList";
 
 const CURRENT_TERM = "2026-1";
 
 function AddDropManagement() {
   const currentUser = getCurrentUser();
 
-  const [student, setStudent] = useState(null);
-  const [eligible, setEligible] = useState(null);
-  const [registrations, setRegistrations] = useState([]);
+  const [offerings, setOfferings] = useState([]);
+  const [search, setSearch] = useState("");
 
-  const [loading, setLoading] = useState(false);
+  const [selectedOffering, setSelectedOffering] = useState(null);
+  const [roster, setRoster] = useState([]);
+
+  const [showAddPanel, setShowAddPanel] = useState(false);
+  const [studentToAdd, setStudentToAdd] = useState(null);
+  const [registrationToRemove, setRegistrationToRemove] = useState(null);
+
+  const [loading, setLoading] = useState(true);
+  const [rosterLoading, setRosterLoading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  const [selectedCourse, setSelectedCourse] = useState(null);
-  const [selectedSection, setSelectedSection] = useState(null);
-
-  const loadStudentData = async (studentId) => {
+  const loadOfferings = async () => {
     setLoading(true);
     setError("");
-    setMessage("");
 
     try {
-      const [eligibleData, registrationsData] = await Promise.all([
-        apiRequest(`/students/${studentId}/eligible?term=${CURRENT_TERM}`),
-        apiRequest(`/students/${studentId}/registrations?term=${CURRENT_TERM}`),
-      ]);
-
-      setEligible(eligibleData);
-      setRegistrations(registrationsData.registrations || []);
+      const data = await apiRequest(`/offerings?term=${CURRENT_TERM}`);
+      setOfferings(data);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -44,33 +41,48 @@ function AddDropManagement() {
     }
   };
 
-  const handleSelectStudent = (selected) => {
-    setStudent(selected);
-    setSelectedCourse(null);
-    setSelectedSection(null);
-    loadStudentData(selected._id);
+  useEffect(() => {
+    loadOfferings();
+  }, []);
+
+  const loadRoster = async (offeringId) => {
+    setRosterLoading(true);
+    setError("");
+
+    try {
+      const data = await apiRequest(`/offerings/${offeringId}/registrations`);
+      setRoster(data.roster || []);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setRosterLoading(false);
+    }
   };
 
-  const handleSelectSection = (course, section) => {
-    setSelectedCourse(course);
-    setSelectedSection(section);
+  const handleSelectOffering = (offering) => {
+    setSelectedOffering(offering);
+    setShowAddPanel(false);
+    setMessage("");
+    setError("");
+    loadRoster(offering._id);
   };
 
-  const handleCancelSelection = () => {
-    setSelectedCourse(null);
-    setSelectedSection(null);
+  const handleBackToOfferings = () => {
+    setSelectedOffering(null);
+    setRoster([]);
+    setShowAddPanel(false);
+  };
+
+  const handleSelectStudentToAdd = (student) => {
+    setStudentToAdd(student);
+  };
+
+  const handleCancelAdd = () => {
+    setStudentToAdd(null);
   };
 
   const handleConfirmAdd = async () => {
-    if (!student || !selectedSection) {
-      return;
-    }
-
-    const sure = window.confirm(
-      `Add ${student.name} to ${selectedCourse.code} Section ${selectedSection.section}?`
-    );
-
-    if (!sure) {
+    if (!selectedOffering || !studentToAdd) {
       return;
     }
 
@@ -81,30 +93,35 @@ function AddDropManagement() {
       await apiRequest("/registrations", {
         method: "POST",
         body: JSON.stringify({
-          studentId: student._id,
-          offeringId: selectedSection.offeringId,
+          studentId: studentToAdd._id,
+          offeringId: selectedOffering._id,
         }),
       });
 
       setMessage(
-        `${student.name} was added to ${selectedCourse.code} Section ${selectedSection.section}.`
+        `${studentToAdd.name} was added to ${selectedOffering.courseId.code} Section ${selectedOffering.section}.`
       );
 
-      setSelectedCourse(null);
-      setSelectedSection(null);
+      setStudentToAdd(null);
+      setShowAddPanel(false);
 
-      await loadStudentData(student._id);
+      await loadRoster(selectedOffering._id);
+      await loadOfferings();
     } catch (err) {
       setError(err.message);
     }
   };
 
-  const handleDrop = async (registration) => {
-    const sure = window.confirm(
-      `Drop ${registration.offering.courseId.code} Section ${registration.offering.section} for ${student.name}?`
-    );
+  const handleRequestRemove = (entry) => {
+    setRegistrationToRemove(entry);
+  };
 
-    if (!sure) {
+  const handleCancelRemove = () => {
+    setRegistrationToRemove(null);
+  };
+
+  const handleConfirmRemove = async () => {
+    if (!registrationToRemove || !selectedOffering) {
       return;
     }
 
@@ -112,19 +129,38 @@ function AddDropManagement() {
     setMessage("");
 
     try {
-      await apiRequest(`/registrations/${registration.id}`, {
+      await apiRequest(`/registrations/${registrationToRemove.registrationId}`, {
         method: "DELETE",
       });
 
       setMessage(
-        `${registration.offering.courseId.code} was dropped from ${student.name}'s schedule.`
+        `${registrationToRemove.studentName} was dropped from ${selectedOffering.courseId.code} Section ${selectedOffering.section}.`
       );
 
-      await loadStudentData(student._id);
+      setRegistrationToRemove(null);
+
+      await loadRoster(selectedOffering._id);
+      await loadOfferings();
     } catch (err) {
       setError(err.message);
     }
   };
+
+  const text = search.trim().toLowerCase();
+
+  const shownOfferings = offerings.filter((offering) => {
+    if (!text) {
+      return true;
+    }
+
+    const course = offering.courseId;
+    return (
+      (course?.code || "").toLowerCase().includes(text) ||
+      (course?.title || "").toLowerCase().includes(text) ||
+      offering.section.toLowerCase().includes(text) ||
+      offering.instructor.toLowerCase().includes(text)
+    );
+  });
 
   return (
     <div className="student-layout">
@@ -138,23 +174,19 @@ function AddDropManagement() {
         />
 
         <div className="admin-content">
-          <StudentSearch onSelect={handleSelectStudent} />
-
-          {message && <p className="success-message">{message}</p>}
-          {error && <ErrorMessage message={error} />}
-
-          {loading && <Loading message="Loading student data..." />}
-
-          {student && !loading && (
+          {!selectedOffering && (
             <>
-              <h3>
-                {student.name} ({student.studentId})
-              </h3>
+              <input
+                type="text"
+                placeholder="Search by course, section or instructor"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
 
-              <h4>Current Registrations ({CURRENT_TERM})</h4>
+              {error && <ErrorMessage message={error} />}
 
-              {registrations.length === 0 ? (
-                <p>No current registrations.</p>
+              {loading ? (
+                <Loading message="Loading offerings..." />
               ) : (
                 <table className="section-table">
                   <thead>
@@ -162,26 +194,87 @@ function AddDropManagement() {
                       <th>Course</th>
                       <th>Section</th>
                       <th>Day/Time</th>
-                      <th>Status</th>
+                      <th>Instructor</th>
+                      <th>Seats</th>
+                      <th>Add/Drop</th>
                       <th></th>
                     </tr>
                   </thead>
                   <tbody>
-                    {registrations.map((registration) => (
-                      <tr key={registration.id}>
+                    {shownOfferings.map((offering) => (
+                      <tr key={offering._id}>
                         <td>
-                          {registration.offering.courseId.code} -{" "}
-                          {registration.offering.courseId.title}
+                          {offering.courseId?.code} -{" "}
+                          {offering.courseId?.title}
                         </td>
-                        <td>{registration.offering.section}</td>
+                        <td>{offering.section}</td>
                         <td>
-                          {registration.offering.day}{" "}
-                          {registration.offering.startTime}-
-                          {registration.offering.endTime}
+                          {offering.day} {offering.startTime}-
+                          {offering.endTime}
                         </td>
-                        <td>{registration.status}</td>
+                        <td>{offering.instructor}</td>
                         <td>
-                          <button onClick={() => handleDrop(registration)}>
+                          {offering.seatsTaken}/{offering.seats}
+                        </td>
+                        <td>
+                          {offering.addDropOpen
+                            ? `Open until ${new Date(
+                                offering.addDropCloseDate
+                              ).toLocaleDateString()}`
+                            : "Closed"}
+                        </td>
+                        <td>
+                          <button onClick={() => handleSelectOffering(offering)}>
+                            Manage
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </>
+          )}
+
+          {selectedOffering && (
+            <div className="offering-roster">
+              <button onClick={handleBackToOfferings}>
+                &larr; Back to offerings
+              </button>
+
+              <h3>
+                {selectedOffering.courseId?.code} —{" "}
+                {selectedOffering.courseId?.title} (Section{" "}
+                {selectedOffering.section})
+              </h3>
+
+              {message && <p className="success-message">{message}</p>}
+              {error && <ErrorMessage message={error} />}
+
+              <h4>Registered Students</h4>
+
+              {rosterLoading ? (
+                <Loading message="Loading roster..." />
+              ) : roster.length === 0 ? (
+                <p>No students currently registered in this section.</p>
+              ) : (
+                <table className="section-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Student ID</th>
+                      <th>Email</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {roster.map((entry) => (
+                      <tr key={entry.registrationId}>
+                        <td>{entry.studentName}</td>
+                        <td>{entry.studentCode}</td>
+                        <td>{entry.studentEmail}</td>
+                        <td>
+                          <button onClick={() => handleRequestRemove(entry)}>
                             Drop
                           </button>
                         </td>
@@ -191,33 +284,65 @@ function AddDropManagement() {
                 </table>
               )}
 
-              <h4>Add Eligible Course</h4>
+              <h4>Add a Student to This Section</h4>
 
-              <EligibleCourseList
-                courses={eligible?.courses}
-                selectedOfferingId={selectedSection?.offeringId}
-                onSelectSection={handleSelectSection}
-              />
+              {!showAddPanel ? (
+                <button onClick={() => setShowAddPanel(true)}>
+                  Add student
+                </button>
+              ) : (
+                <StudentSearch onSelect={handleSelectStudentToAdd} />
+              )}
 
-              {selectedSection && (
+              {studentToAdd && (
                 <div className="modal-overlay">
                   <div className="modal-box">
                     <h4>Confirm Add</h4>
                     <p>
-                      Add <strong>{student.name}</strong> to{" "}
+                      Add <strong>{studentToAdd.name}</strong> to{" "}
                       <strong>
-                        {selectedCourse.code} — {selectedCourse.title}
+                        {selectedOffering.courseId?.code} Section{" "}
+                        {selectedOffering.section}
                       </strong>
-                      , Section {selectedSection.section} (
-                      {selectedSection.day} {selectedSection.startTime}-
-                      {selectedSection.endTime})?
+                      ?
                     </p>
-                    <button onClick={handleConfirmAdd}>Confirm</button>
-                    <button onClick={handleCancelSelection}>Cancel</button>
+                    <div className="modal-actions">
+                      <button className="btn-primary" onClick={handleConfirmAdd}>
+                        Confirm
+                      </button>
+                      <button className="btn-secondary" onClick={handleCancelAdd}>
+                        Cancel
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
-            </>
+
+              {registrationToRemove && (
+                <div className="modal-overlay">
+                  <div className="modal-box">
+                    <h4>Confirm Drop</h4>
+                    <p>
+                      Drop <strong>{registrationToRemove.studentName}</strong>{" "}
+                      from{" "}
+                      <strong>
+                        {selectedOffering.courseId?.code} Section{" "}
+                        {selectedOffering.section}
+                      </strong>
+                      ?
+                    </p>
+                    <div className="modal-actions">
+                      <button className="btn-primary" onClick={handleConfirmRemove}>
+                        Confirm
+                      </button>
+                      <button className="btn-secondary" onClick={handleCancelRemove}>
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           )}
         </div>
       </main>

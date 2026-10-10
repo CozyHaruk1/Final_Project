@@ -1,53 +1,62 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import apiRequest from "../../services/api";
 
 function StudentSearch({ onSelect }) {
+  const [allStudents, setAllStudents] = useState([]);
   const [search, setSearch] = useState("");
-  const [students, setStudents] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [searched, setSearched] = useState(false);
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-    setSearched(true);
+  useEffect(() => {
+    const loadStudents = async () => {
+      setLoading(true);
+      setError("");
 
-    try {
-      const query = search.trim();
-      const data = await apiRequest(
-        `/students?search=${encodeURIComponent(query)}`
-      );
-      setStudents(data);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      try {
+        const data = await apiRequest("/students");
+        setAllStudents(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadStudents();
+  }, []);
+
+  const text = search.trim().toLowerCase();
+
+  const shownStudents = allStudents.filter((student) => {
+    if (!text) {
+      return true;
     }
-  };
+
+    return (
+      student.name.toLowerCase().includes(text) ||
+      student.email.toLowerCase().includes(text) ||
+      (student.studentId || "").toLowerCase().includes(text)
+    );
+  });
 
   return (
     <div className="advisor-student-search">
-      <form onSubmit={handleSearch}>
-        <input
-          type="text"
-          placeholder="Search by name, email or student ID"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <button type="submit">Search</button>
-      </form>
+      <input
+        type="text"
+        placeholder="Search by name, email or student ID"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
 
-      {loading && <p>Searching...</p>}
+      {loading && <p>Loading students...</p>}
       {error && <p className="error-message">{error}</p>}
 
-      {!loading && searched && students.length === 0 && !error && (
+      {!loading && !error && shownStudents.length === 0 && (
         <p>No students found.</p>
       )}
 
-      {students.length > 0 && (
+      {shownStudents.length > 0 && (
         <table className="student-search-results">
           <thead>
             <tr>
@@ -59,7 +68,7 @@ function StudentSearch({ onSelect }) {
             </tr>
           </thead>
           <tbody>
-            {students.map((student) => (
+            {shownStudents.map((student) => (
               <tr key={student._id}>
                 <td>{student.name}</td>
                 <td>{student.studentId}</td>

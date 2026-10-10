@@ -2931,3 +2931,26 @@ textarea {
   color: #c0392b;
   font-size: 13px;
 }
+
+.offering-roster > button:first-child {
+  background: none;
+  border: none;
+  color: #2d6cdf;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 14px;
+  font-size: 14px;
+}
+
+.offering-roster > button:first-child:hover {
+  text-decoration: underline;
+}
+
+.offering-roster h3 {
+  margin: 0 0 16px;
+}
+
+.offering-roster h4 {
+  margin: 20px 0 10px;
+}
