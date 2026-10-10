@@ -179,6 +179,38 @@ function StudentRegistration() {
                 </div>
               )}
 
+              {record?.records && record.records.length > 0 && (
+                <>
+                  <h4>Completed Courses</h4>
+                  <table className="section-table">
+                    <thead>
+                      <tr>
+                        <th>Course</th>
+                        <th>Term</th>
+                        <th>Grade</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {record.records.map((r) => (
+                        <tr key={r._id}>
+                          <td>
+                            {r.courseId?.code} - {r.courseId?.title}
+                          </td>
+                          <td>{r.term}</td>
+                          <td>
+                            {r.grade === "F" ? (
+                              <span className="badge badge-warning">F (Failed)</span>
+                            ) : (
+                              r.grade
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </>
+              )}
+
               <h4>Current Registrations ({CURRENT_TERM})</h4>
 
               {registrations.length === 0 ? (
