@@ -10,9 +10,9 @@ CourseReg is a full stack university course registration system with three user 
 Team Members
 Member                      Student ID	                           Role
 Sai Lin Phyo	            (2409180001)	            Team Lead / Integrator + Frontend B
-Min Khit Oo	                (2409120002)	            Database and Data Lead
-Lin Htet	                (2410010002)	            Backend / API Developer
-Snezhana Ochkurova	        (231113014)                 Frontend A - Admin and Advisor
+Min Khit Oo	               (2409120002)	            Database and Data Lead
+Lin Htet	                  (2410010002)	            Backend / API Developer
+Snezhana Ochkurova	      (231113014)                Frontend A - Admin and Advisor
 
 
 Main Responsibilities
@@ -147,26 +147,38 @@ Final_Project/
 |   |   └── university-logo.png
 │   ├── src/
 │   │   ├── components/
-│   │   ├── admin/
+│   │   |   ├── admin/
+│   │   |   |   ├── AdminSideBar.jsx
+│   │   |   |   ├── UserForm.jsx
+│   |   │   |   └── UserTable.jsx
+│   │   |   ├── advisor/
+│   │   |   |   ├── AdvisorSidebar.jsx
+│   │   |   |   ├── EligibleCourseList.jsx
+│   │   |   |   ├── OfferingTable.jsx
+│   |   │   |   └── StudentSearch.jsx
+│   |   |   ├── pages/
+│   │   |   |   ├── AcademicRecord.jsx
+│   │   |   |   ├── AddDrop.jsx
+│   │   |   |   ├── AddDropManagement.jsx
+│   │   |   |   ├── AdminDashboard.jsx
+│   │   |   |   ├── AdvisorDashboard.jsx
+│   │   |   |   ├── BrowseCourses.jsx
+│   │   |   |   ├── CreateUser.jsx
+│   │   |   |   ├── EditUser.jsx
+│   │   |   |   ├── Login.jsx
+│   │   |   |   ├── ManageOfferings.jsx
+│   │   |   |   ├── MyCourses.jsx
+│   │   |   |   ├── StudentDashboard.jsx
+│   │   |   |   ├── StudentRegistration.jsx
+│   |   │   |   └── UserManagement.jsx
+│   |   |   ├── services/
+│   |   │   |   └── api.js
 │   │   |   ├── ErrorMessage.jsx
 │   │   |   ├── Header.jsx
 │   │   |   ├── Loading.jsx
 │   │   |   ├── ProtectedRoute.jsx
 │   │   |   ├── Sidebar.jsx
-│   |   │   └── StatCard.jsx
-│   |   ├── pages/
-│   │   |   ├── AcademicRecord.jsx
-│   │   |   ├── AddDrop.jsx
-│   │   |   ├── AdminDashboard.jsx
-│   │   |   ├── BrowseCourses.jsx
-│   │   |   ├── CreateUser.jsx
-│   │   |   ├── EditUser.jsx
-│   │   |   ├── Login.jsx
-│   │   |   ├── MyCourses.jsx
-│   │   |   ├── StudentDashboard.jsx
-│   |   │   └── UserManagement.jsx
-│   |   ├── services/
-│   |   │   └── api.js
+│   │   |   └── StatCard.jsx
 │   |   ├── App.css
 │   |   ├── App.jsx
 │   |   └── main.jsx
@@ -178,12 +190,14 @@ Final_Project/
 │   ├── config/
 │   │   └── db.js
 │   ├── controllers/
+│   │   ├── addDropNotify.js
 │   │   ├── authController.js
 │   │   ├── courseController.js
 │   │   ├── notificationController.js
 │   │   ├── offeringController.js
 │   │   ├── registrationController.js
 │   │   ├── studentController.js
+│   │   ├── studentSearchController.js
 |   |   └── userController.js
 │   ├── middleware/
 │   │   ├── authMiddleware.js
@@ -213,9 +227,12 @@ Final_Project/
 │
 ├── docs/
 │   ├── database-diagram/
-│   │   └──  Web2ERDiagram.png
+│   │   └── Web2ERDiagram.png
 │   ├── report/
 │   └── screenshots/
+│   │   ├── Admin-Dashboard.png
+│   │   ├── Advisor-Dashboard.png
+│   │   └── Student-Dashboard.png
 │
 ├── .gitignore
 └── README.md
@@ -307,7 +324,9 @@ Screenshots
 
 Admin Dashboard
 ![Admin Dashboard](docs/screenshots/Admin-Dashboard.png)
+
 Advisor Dashboard
+![Advisor Dashboard](docs/screenshots/Advisor-Dashboard.png)
 
 Student Dashboard
 ![Student Dashboard](docs/screenshots/Student-Dashboard.png)
@@ -315,25 +334,25 @@ Student Dashboard
 Feature	                                            Status
 Login / JWT authentication	                        Complete
 Role-based authorization	                        Complete
-MongoDB models and relationships	                Complete
+MongoDB models and relationships	                  Complete
 Seed dataset	                                    Complete
-Admin Dashboard	                                    Complete
-User Management	                                    Complete
-Student Dashboard	                                Complete
-Student Academic Record	                            Complete
-Student Add/Drop request flow	                    Complete
+Admin Dashboard	                                 Complete
+User Management	                                 Complete
+Student Dashboard	                                 Complete
+Student Academic Record	                           Complete
+Student Add/Drop request flow	                     Complete
 Registration rules engine	                        Complete
 Advisor Manage Offerings	                        Complete
-Advisor Student Registration	                    In Progress / Final Integration
-Advisor Add/Drop Control	                        In Progress / Final Integration
-Student notifications	                            Complete
-Advisor to student notification integration	        In Progress
+Advisor Student Registration	                     Complete
+Advisor Add/Drop Control	                        Complete
+Student notifications	                           Complete
+Advisor to student notification integration	      Complete
 
 Testing
 
 The project is tested using:
 - Browser-based frontend testing.
-- Thunder Client for REST API testing.
+- Postman for REST API testing.
 - MongoDB Atlas / seed verification for database testing.
 - Role based authorization tests.
 - Registration rule tests.
