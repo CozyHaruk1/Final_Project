@@ -20,11 +20,6 @@ const PASSING_GRADES = [
 
 const CURRENT_TERM = process.env.CURRENT_TERM || "2026-1";
 
-
-// ======================================================
-// HELPERS
-// ======================================================
-
 const findStudent = async (identifier) => {
   if (mongoose.Types.ObjectId.isValid(identifier)) {
     const byId = await User.findOne({
@@ -95,11 +90,6 @@ const createStudentNotification =
         read: false,
       });
     } catch (error) {
-      /*
-        Notification failure should
-        never cancel a successful
-        registration change.
-      */
 
       console.error(
         "Notification creation error:",
@@ -107,11 +97,6 @@ const createStudentNotification =
       );
     }
   };
-
-// ======================================================
-// STUDENT RECORD
-// GET /api/students/:id/record
-// ======================================================
 
 const getStudentRecord = async (req, res) => {
   try {
@@ -198,12 +183,6 @@ const getStudentRecord = async (req, res) => {
   }
 };
 
-
-// ======================================================
-// ELIGIBILITY RULES ENGINE
-// GET /api/students/:id/eligible?term=2026-1
-// ======================================================
-
 const getEligibleCourses = async (req, res) => {
   try {
     const student = await findStudent(req.params.id);
@@ -274,12 +253,6 @@ const getEligibleCourses = async (req, res) => {
   }
 };
 
-
-// ======================================================
-// REGISTER STUDENT
-// POST /api/registrations
-// ======================================================
-
 const registerStudent = async (req, res) => {
   try {
     const {
@@ -325,11 +298,6 @@ const registerStudent = async (req, res) => {
     const term =
       offering.term;
 
-
-    // ==================================================
-    // RECORDS
-    // ==================================================
-
     const records =
       await getStudentRecords(
         student._id
@@ -352,9 +320,6 @@ const registerStudent = async (req, res) => {
       }
     }
 
-
-    // Already passed
-
     if (
       passedCodes.has(course.code)
     ) {
@@ -365,9 +330,6 @@ const registerStudent = async (req, res) => {
           )}`,
       });
     }
-
-
-    // Prerequisites
 
     const missingPrerequisites =
       course.prerequisites.filter(
@@ -386,11 +348,6 @@ const registerStudent = async (req, res) => {
       });
     }
 
-
-    // ==================================================
-    // SEATS
-    // ==================================================
-
     if (
       offering.seatsTaken >=
       offering.seats
@@ -400,11 +357,6 @@ const registerStudent = async (req, res) => {
           "Full — 0 seats",
       });
     }
-
-
-    // ==================================================
-    // CURRENT REGISTRATIONS
-    // ==================================================
 
     const currentRegistrations =
       await getCurrentRegistrations(
@@ -431,9 +383,6 @@ const registerStudent = async (req, res) => {
       });
     }
 
-
-    // Time clash
-
     const clash =
       currentRegistrations.find(
         (registration) =>
@@ -450,11 +399,6 @@ const registerStudent = async (req, res) => {
           `Clashes with ${clash.offeringId.courseId.code} Section ${clash.offeringId.section}`,
       });
     }
-
-
-    // ==================================================
-    // CREATE / REACTIVATE REGISTRATION
-    // ==================================================
 
     let registration =
       await Registration.findOne({
@@ -497,11 +441,6 @@ const registerStudent = async (req, res) => {
         });
     }
 
-
-    // ==================================================
-    // UPDATE SEATS
-    // ==================================================
-
     offering.seatsTaken += 1;
     await offering.save();
 
@@ -539,12 +478,6 @@ const registerStudent = async (req, res) => {
     });
   }
 };
-
-
-// ======================================================
-// REMOVE REGISTRATION
-// DELETE /api/registrations/:id
-// ======================================================
 
 const removeRegistration = async (
   req,
@@ -621,12 +554,6 @@ const removeRegistration = async (
     });
   }
 };
-
-
-// ======================================================
-// STUDENT CURRENT REGISTRATIONS
-// GET /api/me/registrations
-// ======================================================
 
 const getMyRegistrations = async (
   req,
@@ -723,12 +650,6 @@ const getMyRegistrations = async (
     });
   }
 };
-
-
-// ======================================================
-// STUDENT OWN RECORD
-// GET /api/me/record
-// ======================================================
 
 const getMyRecord = async (req, res) => {
   try {

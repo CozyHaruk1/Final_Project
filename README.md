@@ -371,7 +371,7 @@ Detailed testing screenshots are included in the final project report.
 Database Diagram
 The final one-page database diagram is stored in:
 docs/database-diagram/
-![Database Diagram](docs/database-diagram/Web2ERDiagram.png)
+![ER Diagram](docs/database-diagram/Web2ERDiagram.png)
 
 It shows the main collections, important fields, references and one to many relationships.
 

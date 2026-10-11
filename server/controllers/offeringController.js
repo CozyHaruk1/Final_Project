@@ -4,11 +4,6 @@ const Registration = require("../models/Registration");
 const User = require("../models/User");
 const { notifyAddDropChange } = require("./addDropNotify");
 
-
-// ======================================================
-// FORMAT OFFERING
-// ======================================================
-
 const formatOffering = (offering) => {
   const object = offering.toObject
     ? offering.toObject()
@@ -23,13 +18,6 @@ const formatOffering = (offering) => {
     full: object.seatsTaken >= object.seats,
   };
 };
-
-
-// ======================================================
-// GET OFFERINGS
-// GET /api/offerings?term=2026-1
-// Student + Advisor
-// ======================================================
 
 const getOfferings = async (req, res) => {
   try {
@@ -62,12 +50,6 @@ const getOfferings = async (req, res) => {
   }
 };
 
-
-// ======================================================
-// GET ONE OFFERING
-// GET /api/offerings/:id
-// ======================================================
-
 const getOfferingById = async (req, res) => {
   try {
     const offering = await Offering.findById(
@@ -92,13 +74,6 @@ const getOfferingById = async (req, res) => {
     });
   }
 };
-
-
-// ======================================================
-// CREATE OFFERING
-// POST /api/offerings
-// Advisor only
-// ======================================================
 
 const createOffering = async (req, res) => {
   try {
@@ -210,13 +185,6 @@ const createOffering = async (req, res) => {
   }
 };
 
-
-// ======================================================
-// UPDATE OFFERING
-// PATCH /api/offerings/:id
-// Advisor only
-// ======================================================
-
 const updateOffering = async (req, res) => {
   try {
     const offering = await Offering.findById(
@@ -299,13 +267,6 @@ const updateOffering = async (req, res) => {
   }
 };
 
-
-// ======================================================
-// DELETE OFFERING
-// DELETE /api/offerings/:id
-// Advisor only
-// ======================================================
-
 const deleteOffering = async (req, res) => {
   try {
     const offering = await Offering.findById(
@@ -344,13 +305,6 @@ const deleteOffering = async (req, res) => {
     });
   }
 };
-
-
-// ======================================================
-// GET OFFERING ROSTER
-// GET /api/offerings/:id/registrations
-// Advisor only — students currently registered in this offering
-// ======================================================
 
 const getOfferingRoster = async (req, res) => {
   try {

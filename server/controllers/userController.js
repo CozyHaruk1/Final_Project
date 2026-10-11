@@ -15,11 +15,6 @@ const safeUser = (user) => {
   return object;
 };
 
-
-// ======================================================
-// GET ALL USERS
-// ======================================================
-
 const getUsers = async (req, res) => {
   try {
     const filter = {};
@@ -52,11 +47,6 @@ const getUsers = async (req, res) => {
   }
 };
 
-
-// ======================================================
-// GET ONE USER
-// ======================================================
-
 const getUserById = async (req, res) => {
   try {
     const user = await User.findById(
@@ -76,11 +66,6 @@ const getUserById = async (req, res) => {
     });
   }
 };
-
-
-// ======================================================
-// CREATE USER
-// ======================================================
 
 const createUser = async (req, res) => {
   try {
@@ -185,11 +170,6 @@ const createUser = async (req, res) => {
   }
 };
 
-
-// ======================================================
-// UPDATE USER
-// ======================================================
-
 const updateUser = async (req, res) => {
   try {
     const user =
@@ -228,9 +208,6 @@ const updateUser = async (req, res) => {
       active !== undefined
         ? active
         : user.active;
-
-
-    // Protect last active admin
 
     if (
       user.role === "admin" &&
@@ -319,11 +296,6 @@ const updateUser = async (req, res) => {
   }
 };
 
-
-// ======================================================
-// DELETE / DEACTIVATE USER
-// ======================================================
-
 const deleteUser = async (req, res) => {
   try {
     const targetUser =
@@ -335,9 +307,6 @@ const deleteUser = async (req, res) => {
       });
     }
 
-
-    // Admin cannot delete themselves
-
     if (
       req.user.id ===
       targetUser._id.toString()
@@ -347,9 +316,6 @@ const deleteUser = async (req, res) => {
           "You cannot delete your own account.",
       });
     }
-
-
-    // Never allow zero active admins
 
     if (
       targetUser.role === "admin" &&
@@ -368,9 +334,6 @@ const deleteUser = async (req, res) => {
         });
       }
     }
-
-
-    // Soft delete
 
     targetUser.active = false;
 
@@ -391,11 +354,6 @@ const deleteUser = async (req, res) => {
     });
   }
 };
-
-
-// ======================================================
-// EXPORTS
-// ======================================================
 
 module.exports = {
   getUsers,
