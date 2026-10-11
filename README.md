@@ -10,9 +10,9 @@ CourseReg is a full stack university course registration system with three user 
 Team Members
 Member                      Student ID	                           Role
 Sai Lin Phyo	            (2409180001)	            Team Lead / Integrator + Frontend B
-Min Khit Oo	                (2409120002)	            Database and Data Lead
-Lin Htet	                (2410010002)	            Backend / API Developer
-Snezhana Ochkurova	        (231113014)                 Frontend A - Admin and Advisor
+Min Khit Oo	               (2409120002)	            Database and Data Lead
+Lin Htet	                  (2410010002)	            Backend / API Developer
+Snezhana Ochkurova	      (231113014)                Frontend A - Admin and Advisor
 
 
 Main Responsibilities
