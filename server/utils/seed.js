@@ -11,10 +11,6 @@ const Registration = require("../models/Registration");
 const Record = require("../models/Record");
 const Notification = require("../models/Notification");
 
-// ======================================================
-// CLEAR DATABASE
-// ======================================================
-
 const clearDatabase = async () => {
   console.log("Clearing old seed data...");
 
@@ -27,11 +23,6 @@ const clearDatabase = async () => {
 
   console.log("Old data cleared");
 };
-
-
-// ======================================================
-// USERS
-// ======================================================
 
 const seedUsers = async () => {
   console.log("Creating users...");
@@ -88,8 +79,8 @@ const seedUsers = async () => {
     "Victor Von Doom", //Student5
     "Thor Odinson", //Student6
     "Jeff D. Vinsmoke", //Student7
-    "Ian McDornald", //Student8
-    "Tony Stark", //Student9
+    "Mr. Wu Gui", //Student8
+    "Ian McDornald", //Student9
     "Sephiroth", //Student10
     "Lily Hosein", //Student11
     "Min Aung Win", //Student12
@@ -147,11 +138,6 @@ const seedUsers = async () => {
     students,
   };
 };
-
-
-// ======================================================
-// COURSES
-// ======================================================
 
 const seedCourses = async () => {
   console.log("Creating courses...");
@@ -313,19 +299,10 @@ const seedCourses = async () => {
   return courses;
 };
 
-
-// ======================================================
-// OFFERINGS
-// ======================================================
-
 const seedOfferings = async (courses) => {
   console.log(
     "Creating course offerings..."
   );
-
-  // ======================================================
-  // CREATE COURSE MAP
-  // ======================================================
 
   const courseMap = new Map();
 
@@ -349,14 +326,7 @@ const seedOfferings = async (courses) => {
     return courseId;
   };
 
-  // ======================================================
-  // OFFERING DATA
-  // ======================================================
-
   const offeringSpecs = [
-    // ------------------------------------------------------
-    // CSC BASIC / CORE COURSES
-    // ------------------------------------------------------
 
     [
       "CSC101",
@@ -454,10 +424,6 @@ const seedOfferings = async (courses) => {
       false,
     ],
 
-    // ------------------------------------------------------
-    // ITE PROGRAMMING
-    // ------------------------------------------------------
-
     [
       "ITE221",
       "A",
@@ -506,10 +472,6 @@ const seedOfferings = async (courses) => {
       true,
     ],
 
-    // ------------------------------------------------------
-    // WEB DEVELOPMENT
-    // ------------------------------------------------------
-
     [
       "CSC120",
       "A",
@@ -533,10 +495,6 @@ const seedOfferings = async (courses) => {
       30,
       false,
     ],
-
-    // ------------------------------------------------------
-    // IOT / NETWORK
-    // ------------------------------------------------------
 
     [
       "ITE233",
@@ -574,10 +532,6 @@ const seedOfferings = async (courses) => {
       false,
     ],
 
-    // ------------------------------------------------------
-    // DATABASE
-    // ------------------------------------------------------
-
     [
       "ITE441",
       "A",
@@ -614,11 +568,6 @@ const seedOfferings = async (courses) => {
       false,
     ],
 
-    // ------------------------------------------------------
-    // OPERATING SYSTEMS
-    // Small class used for FULL section testing
-    // ------------------------------------------------------
-
     [
       "ITE240",
       "A",
@@ -631,10 +580,6 @@ const seedOfferings = async (courses) => {
       true,
     ],
 
-    // ------------------------------------------------------
-    // SYSTEM ADMINISTRATION
-    // ------------------------------------------------------
-
     [
       "ITE231",
       "A",
@@ -646,10 +591,6 @@ const seedOfferings = async (courses) => {
       30,
       false,
     ],
-
-    // ------------------------------------------------------
-    // INFORMATION SECURITY
-    // ------------------------------------------------------
 
     [
       "ITE420",
@@ -675,10 +616,6 @@ const seedOfferings = async (courses) => {
       false,
     ],
 
-    // ------------------------------------------------------
-    // WEB DEVELOPMENT II
-    // ------------------------------------------------------
-
     [
       "ITE220",
       "A",
@@ -690,10 +627,6 @@ const seedOfferings = async (courses) => {
       30,
       true,
     ],
-
-    // ------------------------------------------------------
-    // MOBILE APPLICATION DEVELOPMENT
-    // ------------------------------------------------------
 
     [
       "ITE343",
@@ -707,10 +640,6 @@ const seedOfferings = async (courses) => {
       false,
     ],
   ];
-
-  // ======================================================
-  // CONVERT SPECS INTO OFFERING OBJECTS
-  // ======================================================
 
   const offeringsData =
     offeringSpecs.map(
@@ -758,10 +687,6 @@ const seedOfferings = async (courses) => {
       })
     );
 
-  // ======================================================
-  // VERIFY EXACT NUMBER OF SECTIONS
-  // ======================================================
-
   if (
     offeringsData.length !== 26
   ) {
@@ -769,10 +694,6 @@ const seedOfferings = async (courses) => {
       `Expected 26 offerings but created ${offeringsData.length}`
     );
   }
-
-  // ======================================================
-  // INSERT OFFERINGS
-  // ======================================================
 
   const offerings =
     await Offering.insertMany(
@@ -785,11 +706,6 @@ const seedOfferings = async (courses) => {
 
   return offerings;
 };
-
-
-// ======================================================
-// ACADEMIC RECORDS
-// ======================================================
 
 const seedRecords = async (
   students,
@@ -901,11 +817,6 @@ const seedRecords = async (
   return best.grade;
 };
 
-
-// ======================================================
-// DIFFERENT ACADEMIC HISTORY LENGTHS
-// ======================================================
-
 /*
   Total = exactly 312 records.
 
@@ -957,11 +868,6 @@ const recordCounts = [
   15,  // STU025
 ];
 
-
-// ======================================================
-// VERIFY RECORD DISTRIBUTION
-// ======================================================
-
 const expectedTotal =
   recordCounts.reduce(
     (total, count) =>
@@ -984,11 +890,6 @@ if (expectedTotal !== 312) {
   );
 }
 
-
-// ======================================================
-// CREATE STUDENT RECORDS
-// ======================================================
-
 for (
   let studentIndex = 0;
   studentIndex < students.length;
@@ -1000,10 +901,6 @@ for (
     ];
 
   const selectedCourses = [];
-
-  // ----------------------------------------------------
-  // SELECT COURSES
-  // ----------------------------------------------------
 
   for (
     let recordIndex = 0;
@@ -1021,11 +918,6 @@ for (
       courses[courseIndex]
     );
   }
-
-
-  // ====================================================
-  // ENSURE SPECIAL COURSES EXIST
-  // ====================================================
 
   const ensureCourse = (code) => {
     const alreadyIncluded =
@@ -1061,11 +953,6 @@ for (
       selectedCourses.length - 1
     ] = course;
   };
-
-
-  // ====================================================
-  // SPECIAL ACADEMIC CASES
-  // ====================================================
 
   /*
     STU001
@@ -1110,11 +997,6 @@ for (
     ensureCourse("ITE220");
   }
 
-
-  // ====================================================
-  // ASSIGN GRADES + TERMS
-  // ====================================================
-
   for (
     let recordIndex = 0;
     recordIndex <
@@ -1144,11 +1026,6 @@ for (
         ]
       );
 
-
-    // ==================================================
-    // F GRADES
-    // ==================================================
-
     if (
       studentIndex === 0 &&
       course.code === "ITE475"
@@ -1170,11 +1047,6 @@ for (
       grade = "F";
     }
 
-
-    // ==================================================
-    // WITHDRAWALS
-    // ==================================================
-
     if (
       studentIndex === 3 &&
       course.code === "ITE222"
@@ -1188,11 +1060,6 @@ for (
     ) {
       grade = "W";
     }
-
-
-    // ==================================================
-    // TERM DISTRIBUTION
-    // ==================================================
 
     /*
       Up to four completed courses
@@ -1214,11 +1081,6 @@ for (
         terms.length - 1
       );
 
-
-    // ==================================================
-    // CREATE RECORD
-    // ==================================================
-
     records.push({
       studentId:
         students[
@@ -1238,11 +1100,6 @@ for (
   }
 }
 
-
-// ======================================================
-// FINAL VERIFICATION
-// ======================================================
-
 if (
   records.length !== 312
 ) {
@@ -1261,11 +1118,6 @@ console.log(
 
 return records;
 };
-
-
-// ======================================================
-// CURRENT REGISTRATIONS
-// ======================================================
 
 const seedRegistrations = async (
   students,
@@ -1678,11 +1530,6 @@ const targetCount =
   return registrations;
 };
 
-
-// ======================================================
-// VERIFY DATA
-// ======================================================
-
 const verifySeed = async () => {
   console.log(
     "Verifying seed data..."
@@ -1784,11 +1631,6 @@ const verifySeed = async () => {
   );
 };
 
-
-// ======================================================
-// RUN SEED
-// ======================================================
-
 const seed = async () => {
   try {
     await connectDB();
@@ -1823,11 +1665,6 @@ const seed = async () => {
   courses,
   offerings
 );
-
-
-// ======================================================
-// DEMO NOTIFICATION FOR STU001
-// ======================================================
 
 console.log(
   "Creating notifications..."

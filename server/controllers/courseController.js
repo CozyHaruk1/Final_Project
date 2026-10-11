@@ -1,16 +1,6 @@
 const Course = require("../models/Course");
 const Offering = require("../models/Offering");
 
-
-// ======================================================
-// GET ALL COURSES
-// GET /api/courses
-// Student, Advisor, Admin
-// Optional:
-//   ?search=web
-//   ?term=2026-1
-// ======================================================
-
 const getCourses = async (req, res) => {
   try {
     const filter = {};
@@ -37,22 +27,6 @@ const getCourses = async (req, res) => {
 
     const courses = await Course.find(filter)
       .sort({ code: 1 });
-
-    /*
-    |--------------------------------------------------------------------------
-    | Optional term information
-    |--------------------------------------------------------------------------
-    |
-    | If the frontend sends:
-    |
-    | GET /api/courses?term=2026-1
-    |
-    | we attach current offering information to each course.
-    |
-    | This is useful for Advisor pages without changing the normal
-    | /api/courses response when no term is supplied.
-    |
-    */
 
     if (req.query.term) {
       const term = req.query.term.trim();
@@ -128,15 +102,6 @@ const getCourses = async (req, res) => {
   }
 };
 
-
-// ======================================================
-// GET ONE COURSE
-// GET /api/courses/:id
-// Student, Advisor, Admin
-// Optional:
-//   ?term=2026-1
-// ======================================================
-
 const getCourseById = async (req, res) => {
   try {
     const course = await Course.findById(
@@ -148,12 +113,6 @@ const getCourseById = async (req, res) => {
         message: "Course not found.",
       });
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | If term is supplied, include its sections
-    |--------------------------------------------------------------------------
-    */
 
     if (req.query.term) {
       const term = req.query.term.trim();
@@ -217,13 +176,6 @@ const getCourseById = async (req, res) => {
     });
   }
 };
-
-
-// ======================================================
-// GET COURSES OFFERED IN ONE TERM
-// GET /api/courses/offered/:term
-// Student, Advisor, Admin
-// ======================================================
 
 const getOfferedCoursesByTerm = async (
   req,
