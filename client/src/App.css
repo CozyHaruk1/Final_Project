@@ -2725,3 +2725,283 @@ textarea {
 .admin-quick-actions button:hover {
   background: #1d4ed8;
 }
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-box {
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 8px;
+  max-width: 480px;
+  width: 90%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+/* ======================================================
+   STAGE 6 & 7 — Student Registration / Add-Drop styling
+   ====================================================== */
+
+.success-message {
+  background: #e6f4ea;
+  color: #1e7e34;
+  border: 1px solid #b7dfc2;
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin: 10px 0;
+  font-weight: 500;
+}
+
+.advisor-student-search {
+  margin-bottom: 20px;
+}
+
+.advisor-student-search form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.advisor-student-search input[type="text"] {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.advisor-student-search button {
+  background: #2d6cdf;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.advisor-student-search button:hover {
+  background: #1f54b8;
+}
+
+.student-search-results {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.student-search-results th,
+.student-search-results td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.student-search-results th {
+  background: #f4f5f7;
+  font-weight: 600;
+}
+
+.student-search-results td button {
+  background: #2d6cdf;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.student-search-results td button:hover {
+  background: #1f54b8;
+}
+
+.academic-summary {
+  background: #f4f5f7;
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 12px 0 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.academic-summary p {
+  margin: 0;
+  font-weight: 500;
+  color: #333;
+}
+
+.eligible-course-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 10px;
+}
+
+.eligible-course {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 14px 18px;
+  background: #fff;
+}
+
+.eligible-course.retake-required {
+  border-left: 4px solid #e67e22;
+  background: #fff8f0;
+}
+
+.eligible-course h4 {
+  margin: 0 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+.badge-warning {
+  background: #fdecd2;
+  color: #b9770e;
+}
+
+.section-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 6px;
+}
+
+.section-table th,
+.section-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+  font-size: 14px;
+}
+
+.section-table th {
+  background: #fafafa;
+  font-weight: 600;
+}
+
+.section-table tr.section-disabled {
+  color: #9aa0a6;
+  background: #fafafa;
+}
+
+.section-table tr.section-selected {
+  background: #eaf1ff;
+}
+
+.section-table td button {
+  background: #2d6cdf;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.section-table td button:hover:not(:disabled) {
+  background: #1f54b8;
+}
+
+.section-table td button:disabled {
+  background: #e0e0e0;
+  color: #9aa0a6;
+  cursor: not-allowed;
+}
+
+.course-reason {
+  color: #c0392b;
+  font-size: 13px;
+}
+
+.offering-roster > button:first-child {
+  background: none;
+  border: none;
+  color: #2d6cdf;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 14px;
+  font-size: 14px;
+}
+
+.offering-roster > button:first-child:hover {
+  text-decoration: underline;
+}
+
+.offering-roster h3 {
+  margin: 0 0 16px;
+}
+
+.offering-roster h4 {
+  margin: 20px 0 10px;
+}
+
+/* Back to search button */
+.student-record > button:first-child {
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+}
+
+.student-record > button:first-child:hover {
+  text-decoration: underline;
+}
+
+/* Modal action buttons */
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+
+.btn-secondary {
+  background: #e5e7eb;
+  color: #1f2937;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background: #d1d5db;
+}

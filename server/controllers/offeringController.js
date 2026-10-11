@@ -1,11 +1,8 @@
 const Offering = require("../models/Offering");
 const Course = require("../models/Course");
 const Registration = require("../models/Registration");
-
-
-// ======================================================
-// FORMAT OFFERING
-// ======================================================
+const User = require("../models/User");
+const { notifyAddDropChange } = require("./addDropNotify");
 
 const formatOffering = (offering) => {
   const object = offering.toObject
@@ -21,13 +18,6 @@ const formatOffering = (offering) => {
     full: object.seatsTaken >= object.seats,
   };
 };
-
-
-// ======================================================
-// GET OFFERINGS
-// GET /api/offerings?term=2026-1
-// Student + Advisor
-// ======================================================
 
 const getOfferings = async (req, res) => {
   try {
@@ -60,12 +50,6 @@ const getOfferings = async (req, res) => {
   }
 };
 
-
-// ======================================================
-// GET ONE OFFERING
-// GET /api/offerings/:id
-// ======================================================
-
 const getOfferingById = async (req, res) => {
   try {
     const offering = await Offering.findById(
@@ -90,13 +74,6 @@ const getOfferingById = async (req, res) => {
     });
   }
 };
-
-
-// ======================================================
-// CREATE OFFERING
-// POST /api/offerings
-// Advisor only
-// ======================================================
 
 const createOffering = async (req, res) => {
   try {
@@ -208,13 +185,6 @@ const createOffering = async (req, res) => {
   }
 };
 
-
-// ======================================================
-// UPDATE OFFERING
-// PATCH /api/offerings/:id
-// Advisor only
-// ======================================================
-
 const updateOffering = async (req, res) => {
   try {
     const offering = await Offering.findById(
@@ -226,6 +196,8 @@ const updateOffering = async (req, res) => {
         message: "Offering not found.",
       });
     }
+
+    const previousAddDropOpen = offering.addDropOpen;
 
     const allowedFields = [
       "section",
@@ -280,6 +252,8 @@ const updateOffering = async (req, res) => {
       "code title credits description prerequisites"
     );
 
+    await notifyAddDropChange(offering, previousAddDropOpen);
+
     return res.status(200).json({
       message: "Offering updated successfully.",
       offering: formatOffering(offering),
@@ -292,13 +266,6 @@ const updateOffering = async (req, res) => {
     });
   }
 };
-
-
-// ======================================================
-// DELETE OFFERING
-// DELETE /api/offerings/:id
-// Advisor only
-// ======================================================
 
 const deleteOffering = async (req, res) => {
   try {
@@ -339,6 +306,63 @@ const deleteOffering = async (req, res) => {
   }
 };
 
+const getOfferingRoster = async (req, res) => {
+  try {
+    const offering = await Offering.findById(req.params.id).populate(
+      "courseId",
+      "code title credits"
+    );
+
+    if (!offering) {
+      return res.status(404).json({
+        message: "Offering not found.",
+      });
+    }
+
+    const registrations = await Registration.find({
+      offeringId: offering._id,
+      status: "registered",
+    }).sort({ createdAt: 1 });
+
+    const studentIds = registrations.map((r) => r.studentId);
+
+    const students = await User.find({
+      _id: { $in: studentIds },
+    }).select("name email studentId");
+
+    const studentMap = new Map(
+      students.map((s) => [s._id.toString(), s])
+    );
+
+    const roster = registrations.map((r) => {
+      const student = studentMap.get(r.studentId.toString());
+      return {
+        registrationId: r._id,
+        studentId: student ? student._id : r.studentId,
+        studentName: student ? student.name : "Unknown student",
+        studentCode: student ? student.studentId : "",
+        studentEmail: student ? student.email : "",
+        status: r.status,
+      };
+    });
+
+    return res.status(200).json({
+      offering: {
+        _id: offering._id,
+        courseId: offering.courseId,
+        section: offering.section,
+        term: offering.term,
+      },
+      roster,
+    });
+  } catch (error) {
+    console.error("Get offering roster error:", error);
+    return res.status(400).json({
+      message: "Could not retrieve offering roster.",
+    });
+  }
+};
+
 
 module.exports = {
   getOfferings,
@@ -346,4 +370,5 @@ module.exports = {
   createOffering,
   updateOffering,
   deleteOffering,
+  getOfferingRoster,
 };

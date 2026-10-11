@@ -1,12 +1,6 @@
 const Notification =
   require("../models/Notification");
 
-
-// ======================================================
-// GET MY NOTIFICATIONS
-// GET /api/me/notifications
-// ======================================================
-
 const getMyNotifications = async (
   req,
   res

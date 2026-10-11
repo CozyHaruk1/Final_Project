@@ -11,6 +11,10 @@ import UserManagement from "./pages/UserManagement";
 import CreateUser from "./pages/CreateUser";
 import EditUser from "./pages/EditUser";
 import AdminDashboard from "./pages/AdminDashboard";
+import ManageOfferings from "./pages/ManageOfferings";
+import StudentRegistration from "./pages/StudentRegistration";
+import AddDropManagement from "./pages/AddDropManagement";
+import AdvisorDashboard from "./pages/AdvisorDashboard";
 
 import "./App.css";
 
@@ -121,15 +125,38 @@ function App() {
           </ProtectedRoute>
         }
       />
-      <Route
+            <Route
         path="/advisor"
         element={
           <ProtectedRoute allowedRoles={["advisor"]}>
-            <AdvisorPlaceholder />
+            <AdvisorDashboard />
           </ProtectedRoute>
         }
       />
-
+               <Route
+        path="/advisor/offerings"
+        element={
+          <ProtectedRoute allowedRoles={["advisor"]}>
+            <ManageOfferings />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/advisor/registration"
+        element={
+          <ProtectedRoute allowedRoles={["advisor"]}>
+            <StudentRegistration />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/advisor/add-drop"
+        element={
+          <ProtectedRoute allowedRoles={["advisor"]}>
+            <AddDropManagement />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/"
         element={

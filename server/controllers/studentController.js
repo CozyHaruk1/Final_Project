@@ -6,11 +6,6 @@ const Offering = require("../models/Offering");
 const Registration = require("../models/Registration");
 const Record = require("../models/Record");
 
-
-// ======================================================
-// CONSTANTS
-// ======================================================
-
 const CURRENT_TERM = "2026-1";
 
 const PASSING_GRADES = new Set([
@@ -34,12 +29,6 @@ const GRADE_POINTS = {
   F: 0.0,
 };
 
-
-// ======================================================
-// GET AUTHENTICATED USER ID
-// Supports the JWT structure used by the project.
-// ======================================================
-
 const getAuthenticatedUserId = (req) => {
   return (
     req.user?.userId ||
@@ -47,11 +36,6 @@ const getAuthenticatedUserId = (req) => {
     req.user?._id
   );
 };
-
-
-// ======================================================
-// TIME CLASH CHECK
-// ======================================================
 
 const hasTimeClash = (
   firstOffering,
@@ -72,11 +56,6 @@ const hasTimeClash = (
   );
 };
 
-
-// ======================================================
-// CALCULATE ACADEMIC SUMMARY
-// ======================================================
-
 const TOTAL_PROGRAM_CREDITS = 160;
 
 const calculateAcademicSummary = (
@@ -94,11 +73,6 @@ const calculateAcademicSummary = (
   const failedCourseCodes =
     new Set();
 
-
-  // ====================================================
-  // GPA + PASS / FAIL HISTORY
-  // ====================================================
-
   for (const record of records) {
     const course =
       record.courseId;
@@ -112,13 +86,6 @@ const calculateAcademicSummary = (
 
     const courseCode =
       course.code;
-
-
-    // ------------------------------------------
-    // GPA
-    // W is excluded from GPA.
-    // F counts as 0.
-    // ------------------------------------------
 
     if (record.grade !== "W") {
       const gradePoint =
@@ -140,11 +107,6 @@ const calculateAcademicSummary = (
       }
     }
 
-
-    // ------------------------------------------
-    // PASSED COURSES
-    // ------------------------------------------
-
     if (
       PASSING_GRADES.has(
         record.grade
@@ -159,11 +121,6 @@ const calculateAcademicSummary = (
       );
     }
 
-
-    // ------------------------------------------
-    // FAILED COURSES
-    // ------------------------------------------
-
     if (
       record.grade === "F"
     ) {
@@ -172,11 +129,6 @@ const calculateAcademicSummary = (
       );
     }
   }
-
-
-  // ====================================================
-  // GPA
-  // ====================================================
 
   const gpa =
     totalGpaCredits === 0
@@ -187,13 +139,6 @@ const calculateAcademicSummary = (
             totalGpaCredits
           ).toFixed(2)
         );
-
-
-  // ====================================================
-  // TOTAL EARNED CREDITS
-  // Only successfully passed courses count.
-  // Each course counts once.
-  // ====================================================
 
   let totalCredits = 0;
 
@@ -212,11 +157,6 @@ const calculateAcademicSummary = (
     }
   }
 
-
-  // ====================================================
-  // GRADUATION PROGRESS
-  // ====================================================
-
   const progress =
     Math.min(
       100,
@@ -228,12 +168,6 @@ const calculateAcademicSummary = (
       )
     );
 
-
-  // ====================================================
-  // UNRESOLVED FAILED COURSES
-  // If later passed, retake is no longer required.
-  // ====================================================
-
   const retakeCourses =
     [...failedCourseCodes].filter(
       (code) =>
@@ -241,11 +175,6 @@ const calculateAcademicSummary = (
           code
         )
     );
-
-
-  // ====================================================
-  // RETURN SUMMARY
-  // ====================================================
 
   return {
     gpa,
@@ -267,10 +196,6 @@ const calculateAcademicSummary = (
     failedCourseCodes,
   };
 };
-
-// ======================================================
-// LOAD STUDENT + RECORD
-// ======================================================
 
 const loadStudentRecord = async (
   studentId
@@ -365,13 +290,6 @@ const loadStudentRecord = async (
   };
 };
 
-
-// ======================================================
-// GET STUDENT RECORD
-// GET /api/students/:id/record
-// Advisor + own student
-// ======================================================
-
 const getStudentRecord = async (
   req,
   res
@@ -442,13 +360,6 @@ const getStudentRecord = async (
   }
 };
 
-
-// ======================================================
-// GET MY RECORD
-// GET /api/me/record
-// Student
-// ======================================================
-
 const getMyRecord = async (
   req,
   res
@@ -492,13 +403,6 @@ const getMyRecord = async (
     });
   }
 };
-
-
-// ======================================================
-// GET MY CURRENT REGISTRATIONS
-// GET /api/me/registrations
-// Student
-// ======================================================
 
 const getMyRegistrations = async (
   req,
@@ -618,13 +522,6 @@ const getMyRegistrations = async (
   }
 };
 
-
-// ======================================================
-// GET ELIGIBLE COURSES
-// GET /api/students/:id/eligible?term=2026-1
-// Advisor only
-// ======================================================
-
 const getEligibleCourses = async (
   req,
   res
@@ -663,10 +560,6 @@ const getEligibleCourses = async (
       });
     }
 
-    // ==================================================
-    // PREVIOUS ACADEMIC HISTORY
-    // ==================================================
-
     const records =
       await Record.find({
         studentId:
@@ -692,10 +585,6 @@ const getEligibleCourses = async (
     const failedCodes =
       summary.failedCourseCodes;
 
-    /*
-      Last passing grade for each
-      completed course.
-    */
     const passingGradeByCode =
       new Map();
 
@@ -712,10 +601,6 @@ const getEligibleCourses = async (
         );
       }
     }
-
-    // ==================================================
-    // CURRENT REGISTRATIONS
-    // ==================================================
 
     const currentRegistrations =
       await Registration.find({
@@ -756,10 +641,6 @@ const getEligibleCourses = async (
           )
           .filter(Boolean)
       );
-
-    // ==================================================
-    // ALL COURSES + CURRENT TERM OFFERINGS
-    // ==================================================
 
     const courses =
       await Course.find({})
@@ -802,10 +683,6 @@ const getEligibleCourses = async (
         ) &&
         !alreadyPassed;
 
-      // ----------------------------------------------
-      // COURSE IS NOT OFFERED THIS TERM
-      // ----------------------------------------------
-
       if (
         courseOfferings.length === 0
       ) {
@@ -841,10 +718,6 @@ const getEligibleCourses = async (
 
         continue;
       }
-
-      // ----------------------------------------------
-      // CHECK EACH SECTION
-      // ----------------------------------------------
 
       const sections =
         courseOfferings.map(
@@ -1025,10 +898,6 @@ const getEligibleCourses = async (
       });
     }
 
-    // ==================================================
-    // RETAKE REQUIRED FIRST
-    // ==================================================
-
     result.sort((a, b) => {
       if (
         a.retakeRequired &&
@@ -1123,11 +992,6 @@ const getEligibleCourses = async (
     });
   }
 };
-
-
-// ======================================================
-// EXPORTS
-// ======================================================
 
 module.exports = {
   getStudentRecord,

@@ -62,11 +62,6 @@ function Header({
           .toUpperCase()
       : "S";
 
-
-  // ====================================================
-  // LOAD NOTIFICATIONS
-  // ====================================================
-
   const loadNotifications =
     async () => {
       try {
@@ -98,11 +93,6 @@ function Header({
     }
   }, []);
 
-
-  // ====================================================
-  // CLOSE WHEN CLICKING OUTSIDE
-  // ====================================================
-
   useEffect(() => {
     const handleOutsideClick =
       (event) => {
@@ -131,11 +121,6 @@ function Header({
     };
   }, []);
 
-
-  // ====================================================
-  // BELL
-  // ====================================================
-
   const handleNotificationToggle =
     async () => {
       const nextOpen =
@@ -144,20 +129,10 @@ function Header({
       setNotificationsOpen(
         nextOpen
       );
-
-      /*
-        Refresh whenever the
-        student opens the bell.
-      */
       if (nextOpen) {
         await loadNotifications();
       }
     };
-
-
-  // ====================================================
-  // MARK ALL READ
-  // ====================================================
 
   const handleMarkAllRead =
     async () => {

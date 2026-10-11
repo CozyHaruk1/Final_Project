@@ -48,10 +48,6 @@ function StudentDashboard() {
           getMyRecord()
         ]);
 
-        // =========================
-        // CURRENT REGISTRATIONS
-        // =========================
-
         setRegistrations(
           registrationData.registrations || []
         );
@@ -60,20 +56,9 @@ function StudentDashboard() {
           registrationData.term || ""
         );
 
-
-        // =========================
-        // STUDENT INFORMATION
-        // =========================
-
         setStudent(
           recordData.student || null
         );
-
-
-        // =========================
-        // ACADEMIC RECORD
-        // New studentController uses courseId
-        // =========================
 
         const normalizedRecords =
           (recordData.records || []).map(
@@ -101,11 +86,6 @@ function StudentDashboard() {
           normalizedRecords
         );
 
-
-        // =========================
-        // ACADEMIC SUMMARY
-        // =========================
-
         const summary =
           recordData.academicSummary || {};
 
@@ -130,11 +110,6 @@ function StudentDashboard() {
     loadDashboard();
   }, []);
 
-
-  // =========================
-  // CURRENT CREDITS
-  // =========================
-
   const currentCredits =
     registrations.reduce(
       (total, registration) => {
@@ -150,21 +125,11 @@ function StudentDashboard() {
       0
     );
 
-
-  // =========================
-  // RETAKE COURSES
-  // =========================
-
   const failedCourses =
     records.filter(
       (record) =>
         record.retakeRequired
     );
-
-
-  // =========================
-  // GRADUATION PROGRESS
-  // =========================
 
   const graduationTarget = 160;
 

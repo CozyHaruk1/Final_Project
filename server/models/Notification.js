@@ -20,6 +20,8 @@ const notificationSchema =
         enum: [
           "course_registered",
           "course_dropped",
+          "adddrop_opened",
+          "adddrop_closed",
         ],
 
         required: true,

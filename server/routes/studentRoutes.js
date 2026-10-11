@@ -1,21 +1,34 @@
 const express = require("express");
 
-// Existing registration controller
+// Student controller: advisor record/eligibility + student academic record
 const {
   getStudentRecord,
   getEligibleCourses,
+  getMyRecord,
+} = require("../controllers/studentController");
+
+// Use the original registration controller for Student current registrations
+const {
   getMyRegistrations,
 } = require("../controllers/registrationController");
 
-// New student controller with GPA
+// Search + advisor registrations list controller
 const {
-  getMyRecord,
-} = require("../controllers/studentController");
+  searchStudents,
+  getStudentRegistrations,
+} = require("../controllers/studentSearchController");
 
 const protect = require("../middleware/authMiddleware");
 const authorize = require("../middleware/roleMiddleware");
 
 const router = express.Router();
+
+router.get(
+  "/students",
+  protect,
+  authorize("advisor"),
+  searchStudents
+);
 
 router.get(
   "/students/:id/record",
@@ -29,6 +42,13 @@ router.get(
   protect,
   authorize("advisor"),
   getEligibleCourses
+);
+
+router.get(
+  "/students/:id/registrations",
+  protect,
+  authorize("advisor"),
+  getStudentRegistrations
 );
 
 router.get(

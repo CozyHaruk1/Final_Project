@@ -8,14 +8,6 @@ const PASSING_GRADES = new Set([
   "D",
 ]);
 
-/*
-|--------------------------------------------------------------------------
-| Helpers
-|--------------------------------------------------------------------------
-*/
-
-// Safely get a MongoDB ObjectId as a string.
-// Works whether the value is populated or just an ObjectId.
 const idOf = (value) => {
   if (!value) return null;
 
@@ -26,9 +18,6 @@ const idOf = (value) => {
   return value.toString();
 };
 
-
-// Convert "08:30" or "8:30" into minutes.
-// This makes time comparison safer than comparing strings directly.
 const timeToMinutes = (time) => {
   if (!time || typeof time !== "string") {
     return null;
@@ -46,8 +35,6 @@ const timeToMinutes = (time) => {
   return hours * 60 + minutes;
 };
 
-
-// Check whether two course offerings overlap.
 const timesOverlap = (a, b) => {
   if (!a || !b) {
     return false;
@@ -57,7 +44,6 @@ const timesOverlap = (a, b) => {
     return false;
   }
 
-  // Different days cannot clash.
   if (a.day !== b.day) {
     return false;
   }
@@ -79,45 +65,12 @@ const timesOverlap = (a, b) => {
   return aStart < bEnd && aEnd > bStart;
 };
 
-
-// Return a readable course code from a populated offering.
 const getOfferingCourseCode = (offering) => {
   return (
     offering?.courseId?.code ||
     "another course"
   );
 };
-
-
-/*
-|--------------------------------------------------------------------------
-| Eligibility Builder
-|--------------------------------------------------------------------------
-|
-| Expected inputs:
-|
-| courses
-|   All courses in the catalogue.
-|
-| offerings
-|   Offerings for the selected term only.
-|
-| records
-|   Student academic history.
-|
-| registrations
-|   Student registrations for the selected term.
-|
-| selectedOfferings
-|   Optional offerings being selected during the current registration
-|   process. Useful for checking clashes before saving.
-|
-| enforcePrerequisites
-|   Optional extra rule.
-|   The rubric does not require prerequisites, so it defaults to false.
-|
-|--------------------------------------------------------------------------
-*/
 
 const buildEligibility = ({
   courses = [],
@@ -211,8 +164,6 @@ const buildEligibility = ({
 
     const courseCode = course.code;
 
-    // Only sections passed into "offerings" are considered.
-    // The controller should already filter them by selected term.
     const courseSections = offerings.filter((offering) => {
       return (
         idOf(offering.courseId) === idOf(course)
@@ -232,7 +183,6 @@ const buildEligibility = ({
       ? passedGrades.get(courseCode)
       : null;
 
-    // If they once failed but later passed, they no longer need a retake.
     const retakeRequired =
       failedCourses.has(courseCode) &&
       !passed;
@@ -406,7 +356,6 @@ const buildEligibility = ({
       const clash = comparisonOfferings.find(
         (otherOffering) => {
 
-          // Do not compare an offering with itself.
           if (
             idOf(otherOffering) ===
             idOf(offering)
